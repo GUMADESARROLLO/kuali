@@ -13,14 +13,14 @@ const cfg = computed(() => {
         icon: 'pending' | 'success' | 'failed' | 'inprogress' | 'submitted' | 'expired';
         spin?: boolean;
     }> = {
-        abierto:    { label: 'Abierto', bg: 'bg-amber-100', text: 'text-amber-900', icon: 'submitted' },
-        en_proceso: { label: 'En proceso', bg: 'bg-sky-100', text: 'text-sky-800', icon: 'inprogress', spin: true },
-        en_espera:  { label: 'En espera', bg: 'bg-yellow-100', text: 'text-yellow-700', icon: 'pending' },
-        resuelto:   { label: 'Resuelto', bg: 'bg-green-100', text: 'text-green-700', icon: 'success' },
-        cerrado:    { label: 'Cerrado', bg: 'bg-gray-100', text: 'text-gray-700', icon: 'expired' },
-        cancelado:  { label: 'Cancelado', bg: 'bg-red-100', text: 'text-red-700', icon: 'failed' },
+        abierto:    { label: 'Abierto', bg: 'bg-amber-100 dark:bg-amber-900/40', text: 'text-amber-900 dark:text-amber-300', icon: 'submitted' },
+        en_proceso: { label: 'En proceso', bg: 'bg-sky-100 dark:bg-sky-900/40', text: 'text-sky-800 dark:text-sky-300', icon: 'inprogress', spin: true },
+        en_espera:  { label: 'En espera', bg: 'bg-yellow-100 dark:bg-yellow-900/40', text: 'text-yellow-700 dark:text-yellow-300', icon: 'pending' },
+        resuelto:   { label: 'Resuelto', bg: 'bg-green-100 dark:bg-green-900/40', text: 'text-green-700 dark:text-green-300', icon: 'success' },
+        cerrado:    { label: 'Cerrado', bg: 'bg-gray-100 dark:bg-gray-700', text: 'text-gray-700 dark:text-gray-300', icon: 'expired' },
+        cancelado:  { label: 'Cancelado', bg: 'bg-red-100 dark:bg-red-900/40', text: 'text-red-700 dark:text-red-300', icon: 'failed' },
     };
-    return map[props.status] ?? { label: props.status, bg: 'bg-gray-100', text: 'text-gray-600', icon: 'expired' };
+    return map[props.status] ?? { label: props.status, bg: 'bg-gray-100 dark:bg-gray-700', text: 'text-gray-600 dark:text-gray-300', icon: 'expired' };
 });
 </script>
 

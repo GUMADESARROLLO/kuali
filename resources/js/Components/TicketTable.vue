@@ -18,11 +18,7 @@ defineProps<{
 }>();
 
 const viewTicket = (ticket: Ticket) => {
-    router.get(`/admin/tickets/${ticket.id}`);
-};
-
-const manageTicket = (ticket: Ticket) => {
-    router.get(`/admin/tickets/${ticket.id}`);
+    router.get(route('admin.tickets.show', { ticket: ticket.id }));
 };
 
 const formatDate = (dateStr: string): string => {
@@ -92,7 +88,7 @@ const formatDate = (dateStr: string): string => {
                                 <span class="material-symbols-outlined text-[20px]">edit</span>
                             </button>
                             <button
-                                @click="manageTicket(t)"
+                                @click="viewTicket(t)"
                                 class="px-3 py-1 border border-border-subtle dark:border-gray-600 hover:border-deep-navy rounded text-label-sm font-semibold hover:bg-deep-navy hover:text-white dark:hover:bg-blue-600 transition-all"
                             >
                                 Manage

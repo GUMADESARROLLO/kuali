@@ -2,7 +2,7 @@
 import AppLayout from '@/Layouts/AppLayout.vue';
 import PriorityBadge from '@/Components/PriorityBadge.vue';
 import StatusPill from '@/Components/StatusPill.vue';
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 
 interface Stats {
     abiertos: number;
@@ -86,7 +86,7 @@ defineProps<{
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-border-subtle dark:divide-gray-700">
-                    <tr v-for="t in recent" :key="t.id" class="hover:bg-surface-container-lowest dark:hover:bg-gray-700/50 transition-colors">
+                    <tr v-for="t in recent" :key="t.id" class="hover:bg-surface-container-lowest dark:hover:bg-gray-700/50 transition-colors cursor-pointer" @click="router.get(route('admin.tickets.show', { ticket: t.id }))">
                         <td class="px-6 py-3 text-body-sm font-mono text-on-surface dark:text-gray-100">{{ t.ticket_number }}</td>
                         <td class="px-6 py-3 text-body-sm text-on-surface dark:text-gray-100 truncate max-w-xs">{{ t.title }}</td>
                         <td class="px-6 py-3 text-body-sm text-outline dark:text-gray-400">{{ t.category?.name ?? '—' }} / {{ t.subcategory?.name ?? '—' }}</td>

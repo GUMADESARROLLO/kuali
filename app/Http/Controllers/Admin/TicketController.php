@@ -24,4 +24,22 @@ class TicketController extends Controller
             'activeTab' => $request->status ?? 'all',
         ]);
     }
+
+    public function show(Ticket $ticket)
+    {
+        $ticket->load([
+            'user',
+            'department',
+            'category',
+            'subcategory',
+            'assignedAgent',
+            'comments.author',
+            'histories.user',
+            'attachments.uploader',
+        ]);
+
+        return Inertia::render('Admin/Tickets/Show', [
+            'ticket' => $ticket,
+        ]);
+    }
 }
