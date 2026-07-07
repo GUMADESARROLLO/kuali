@@ -1,6 +1,41 @@
 <script setup lang="ts">
+import { ref, onMounted, onUnmounted } from 'vue';
 import { Link } from '@inertiajs/vue3';
 import AppLogo from '@/Components/AppLogo.vue';
+
+const images = [
+    'img/Login/bg-login.png',
+    'img/Login/bg-loginV1.png',
+    'img/Login/bg-loginV2.png',
+    'img/Login/bg-loginV3.png',
+    'img/Login/bg-loginV4.png',
+    'img/Login/bg-loginV5.png',
+    'img/Login/bg-loginV6.png',
+    'img/Login/bg-loginv7.png',
+];
+
+const current = ref(0);
+const next = ref(1);
+const transitioning = ref(false);
+
+let interval: ReturnType<typeof setInterval> | null = null;
+
+const advance = () => {
+    transitioning.value = true;
+    setTimeout(() => {
+        current.value = next.value;
+        next.value = (next.value + 1) % images.length;
+        transitioning.value = false;
+    }, 800);
+};
+
+onMounted(() => {
+    interval = setInterval(advance, 12000);
+});
+
+onUnmounted(() => {
+    if (interval) clearInterval(interval);
+});
 </script>
 
 <template>
@@ -29,11 +64,14 @@ import AppLogo from '@/Components/AppLogo.vue';
         </section>
 
         <!-- Right Hero Section -->
-        <section class="hidden lg:block lg:w-[68%] relative h-full bg-gray-200">
+        <section class="hidden lg:block lg:w-[68%] relative h-full bg-gray-200 overflow-hidden">
             <img
-                alt="Professional working on laptop"
-                class="absolute inset-0 w-full h-full object-cover"
-                src="img/bg-login.png"
+                v-for="(src, i) in images"
+                :key="i"
+                :src="src"
+                :alt="'Background ' + (i + 1)"
+                class="absolute inset-0 w-full h-full object-cover transition-all duration-[1200ms] ease-in-out"
+                :class="i === current ? 'opacity-100' : 'opacity-0'"
             />
             <div class="absolute inset-0 hero-gradient-overlay" />
             <div class="absolute inset-0 p-20 flex flex-col justify-start text-white">
