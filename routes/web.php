@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\TicketController as AdminTicketController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
@@ -8,14 +9,13 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/dashboard', fn () => redirect()->route('home'))
-        ->name('dashboard');
+    Route::get('/dashboard', fn () => redirect()->route('home'))->name('dashboard');
+    Route::get('/mis-tickets', [DashboardController::class, 'user'])->name('user.dashboard');
 
-    Route::get('/mis-tickets', [DashboardController::class, 'user'])
-        ->name('user.dashboard');
-
-    Route::get('/admin', [DashboardController::class, 'admin'])
-        ->name('admin.dashboard');
+    Route::prefix('admin')->name('admin.')->group(function () {
+        Route::get('/', [DashboardController::class, 'admin'])->name('dashboard');
+        Route::get('/tickets', [AdminTicketController::class, 'index'])->name('tickets.index');
+    });
 });
 
 Route::middleware('auth')->group(function () {

@@ -6,15 +6,55 @@
   --color-tertiary: #5F3800;
   --color-neutral: #E9E9E9;
 
+  --color-deep-navy: #2C3E75;
+  --color-success-green: #4CAF50;
+  --color-surface-gray: #F8FAFC;
+  --color-border-subtle: #E2E8F0;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f4f3f3;
+  --color-surface-container: #eeeeee;
+  --color-surface-container-high: #e8e8e8;
+  --color-surface-container-highest: #e2e2e2;
+  --color-error: #ba1a1a;
+  --color-error-container: #ffdad6;
+  --color-outline: #757681;
+  --color-outline-variant: #c5c6d1;
+
+  --color-on-primary: #ffffff;
+  --color-on-surface: #1a1c1c;
+  --color-on-surface-variant: #454650;
+  --color-on-error: #ffffff;
+  --color-on-secondary-container: #00731e;
+  --color-on-primary-container: #99abe9;
+  --color-on-primary-fixed-variant: #32447b;
+  --color-on-tertiary-fixed-variant: #663e05;
+  --color-primary-container: #2c3e75;
+  --color-secondary-container: #91f78e;
+  --color-tertiary-container: #5f3800;
+
   --color-kuali-navy: #2C3E75;
   --color-kuali-gray: #F3F4F6;
   --color-kuali-text: #4B5563;
 
   --font-family-sans: 'Hanken Grotesk', sans-serif;
+
+  --font-size-display-lg: 36px;
+  --font-size-headline-md: 24px;
+  --font-size-headline-sm: 20px;
+  --font-size-body-lg: 18px;
+  --font-size-body-md: 16px;
+  --font-size-body-sm: 14px;
+  --font-size-label-md: 13px;
+  --font-size-label-sm: 12px;
+
+  --spacing-gutter: 1.5rem;
+  --spacing-stack-md: 1rem;
+  --spacing-stack-lg: 2rem;
 }
 
 body {
   font-family: 'Hanken Grotesk', sans-serif;
+  background-color: #F8FAFC;
 }
 
 .hero-gradient-overlay {
@@ -27,4 +67,23 @@ body {
   flex: 1;
   height: 1px;
   background: #E5E7EB;
+}
+
+.active-tab::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #2C3E75;
+}
+
+.table-scrollbar::-webkit-scrollbar {
+  height: 6px;
+}
+
+.table-scrollbar::-webkit-scrollbar-thumb {
+  background: #e2e2e2;
+  border-radius: 10px;
 }

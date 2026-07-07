@@ -1,0 +1,19 @@
+<script setup lang="ts">
+import Sidebar from '@/Components/Sidebar.vue';
+import TopBar from '@/Components/TopBar.vue';
+
+defineProps<{
+    activeNav?: string;
+}>();
+</script>
+
+<template>
+    <Sidebar :active-nav="activeNav" />
+    <TopBar />
+
+    <main class="pt-16 pl-20 lg:pl-64 min-h-screen bg-surface-gray">
+        <div class="max-w-[1280px] mx-auto p-4 md:p-8">
+            <slot />
+        </div>
+    </main>
+</template>
