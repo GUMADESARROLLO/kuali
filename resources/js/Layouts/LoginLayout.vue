@@ -5,7 +5,7 @@ import AppLogo from '@/Components/AppLogo.vue';
 
 <template>
     <main class="flex h-screen w-full bg-white text-gray-900 overflow-hidden">
-        <!-- Left Panel -->
+        <!-- Left Login Panel -->
         <section class="w-full lg:w-[32%] h-full flex flex-col p-8 md:p-12 overflow-y-auto">
             <div class="mb-10">
                 <Link href="/">
@@ -13,8 +13,10 @@ import AppLogo from '@/Components/AppLogo.vue';
                 </Link>
             </div>
 
-            <div class="my-auto w-full">
-                <slot />
+            <div class="my-auto">
+                <slot name="header" />
+                <slot name="form" />
+                <slot name="footer" />
             </div>
 
             <footer class="mt-auto pt-10 text-center">
@@ -26,7 +28,7 @@ import AppLogo from '@/Components/AppLogo.vue';
             </footer>
         </section>
 
-        <!-- Right Hero -->
+        <!-- Right Hero Section -->
         <section class="hidden lg:block lg:w-[68%] relative h-full bg-gray-200">
             <img
                 alt="Professional working on laptop"
@@ -44,6 +46,33 @@ import AppLogo from '@/Components/AppLogo.vue';
                             <path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
                         </svg>
                     </a>
+                </div>
+                <div class="mt-20 relative">
+                    <div class="bg-white p-6 rounded-xl shadow-2xl w-fit mb-24">
+                        <span class="material-symbols-outlined text-primary" style="font-size: 32px;">confirmation_number</span>
+                    </div>
+                    <div class="absolute top-1/2 right-12 translate-y-20 bg-white/95 backdrop-blur-sm p-5 rounded-xl shadow-xl w-72 text-gray-800">
+                        <div class="space-y-4">
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-500 uppercase">M&eacute;tricas del D&iacute;a</label>
+                                <div class="flex items-center justify-between border border-gray-200 rounded p-2 mt-1">
+                                    <div class="flex items-center gap-2 text-xs">
+                                        <span class="material-symbols-outlined text-green-600 text-sm">check_circle</span>
+                                        <span>Tickets Resueltos: 124</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-500 uppercase">Alertas Cr&iacute;ticas</label>
+                                <div class="flex items-center justify-between border border-gray-200 rounded p-2 mt-1">
+                                    <div class="flex items-center gap-2 text-xs">
+                                        <span class="material-symbols-outlined text-red-600 text-sm">warning</span>
+                                        <span>Prioridad Alta: 8 Pendientes</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>

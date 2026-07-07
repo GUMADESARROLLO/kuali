@@ -85,7 +85,7 @@ const priorityClass = (p: string): string => {
                         </h3>
                         <a
                             href="/mis-tickets/nuevo"
-                            class="inline-flex items-center px-3 py-1.5 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700"
+                            class="inline-flex items-center px-3 py-1.5 bg-primary text-white text-sm font-medium rounded-md hover:bg-primary/90"
                         >
                             Nuevo ticket
                         </a>

@@ -1,3 +1,30 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #2C3E75;
+  --color-secondary: #4CAF50;
+  --color-tertiary: #5F3800;
+  --color-neutral: #E9E9E9;
+
+  --color-kuali-navy: #2C3E75;
+  --color-kuali-gray: #F3F4F6;
+  --color-kuali-text: #4B5563;
+
+  --font-family-sans: 'Hanken Grotesk', sans-serif;
+}
+
+body {
+  font-family: 'Hanken Grotesk', sans-serif;
+}
+
+.hero-gradient-overlay {
+  background: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.3));
+}
+
+.divider-text::before,
+.divider-text::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #E5E7EB;
+}

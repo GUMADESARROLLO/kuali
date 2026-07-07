@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import Checkbox from '@/Components/Checkbox.vue';
-import GuestLayout from '@/Layouts/GuestLayout.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, useForm } from '@inertiajs/vue3';
+import { Link } from '@inertiajs/vue3';
+import LoginLayout from '@/Layouts/LoginLayout.vue';
+import FormInput from '@/Components/FormInput.vue';
+import KualiButton from '@/Components/KualiButton.vue';
 
 defineProps<{
     canResetPassword?: boolean;
@@ -28,71 +26,66 @@ const submit = () => {
 </script>
 
 <template>
-    <GuestLayout>
-        <Head title="Log in" />
+    <LoginLayout>
+        <Head title="Iniciar Sesión" />
 
-        <div v-if="status" class="mb-4 text-sm font-medium text-green-600">
-            {{ status }}
-        </div>
+        <template #header>
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">Iniciar Sesión</h1>
+                <p class="text-sm text-gray-600 mb-4">Ingresa tus credenciales para gestionar tus requerimientos técnicos.</p>
+                <p class="text-sm text-gray-500">
+                    ¿Necesitas una cuenta de Kuali?
+                </p>
+            </div>
+        </template>
 
-        <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="email" value="Email" />
+        <template #form>
+            <div v-if="status" class="mb-4 text-sm font-medium text-green-600">
+                {{ status }}
+            </div>
 
-                <TextInput
-                    id="email"
-                    type="email"
-                    class="mt-1 block w-full"
+            <form @submit.prevent="submit" class="space-y-6">
+                <FormInput
                     v-model="form.email"
-                    required
-                    autofocus
+                    label="Correo Corporativo"
+                    type="email"
+                    placeholder="Ingresa tu correo electrónico"
+                    badge="Acceso Restringido a Colaboradores"
                     autocomplete="username"
+                    autofocus
+                    :error="form.errors.email"
                 />
 
-                <InputError class="mt-2" :message="form.errors.email" />
-            </div>
-
-            <div class="mt-4">
-                <InputLabel for="password" value="Password" />
-
-                <TextInput
-                    id="password"
-                    type="password"
-                    class="mt-1 block w-full"
+                <FormInput
                     v-model="form.password"
-                    required
+                    label="Contraseña"
+                    type="password"
+                    placeholder="Ingresa tu contraseña"
                     autocomplete="current-password"
+                    :error="form.errors.password"
                 />
 
-                <InputError class="mt-2" :message="form.errors.password" />
-            </div>
+                <KualiButton :disabled="form.processing" :class="{ 'opacity-25': form.processing }">
+                    Acceder al Portal
+                </KualiButton>
+            </form>
 
-            <div class="mt-4 block">
-                <label class="flex items-center">
-                    <Checkbox name="remember" v-model:checked="form.remember" />
-                    <span class="ms-2 text-sm text-gray-600 dark:text-gray-400"
-                        >Remember me</span
-                    >
-                </label>
+            <div class="mt-8 pt-6 border-t border-gray-100 text-center">
+                <p class="text-sm text-gray-500">¿Tienes problemas para acceder?</p>
+                <a href="#" class="text-sm font-semibold text-primary hover:underline">Contacta a la mesa de ayuda</a>
             </div>
+        </template>
 
-            <div class="mt-4 flex items-center justify-end">
+        <template #footer>
+            <p class="text-sm text-gray-500 mt-6">
                 <Link
                     v-if="canResetPassword"
                     :href="route('password.request')"
-                    class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:text-gray-400 dark:hover:text-gray-100 dark:focus:ring-offset-gray-800"
+                    class="font-semibold text-primary hover:underline"
                 >
-                    Forgot your password?
+                    ¿Olvidaste tu contraseña?
                 </Link>
-
-                <PrimaryButton
-                    class="ms-4"
-                    :class="{ 'opacity-25': form.processing }"
-                    :disabled="form.processing"
-                >
-                    Log in
-                </PrimaryButton>
-            </div>
-        </form>
-    </GuestLayout>
+            </p>
+        </template>
+    </LoginLayout>
 </template>
