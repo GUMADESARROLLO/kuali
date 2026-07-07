@@ -40,7 +40,7 @@ defineProps<{
                 <p class="text-body-md text-outline dark:text-gray-400">Tickets de tu departamento.</p>
             </div>
             <Link
-                :href="route('user.dashboard')"
+                :href="route('user.tickets.create')"
                 class="bg-deep-navy hover:bg-primary text-white px-6 py-2.5 rounded-lg text-label-md flex items-center gap-2 transition-all shadow-sm hover:shadow-md active:scale-95"
             >
                 <span class="material-symbols-outlined text-[18px]">add</span>
