@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import StatusBadge from '@/Components/StatusBadge.vue';
+import StatusPill from '@/Components/StatusPill.vue';
 import PriorityBadge from '@/Components/PriorityBadge.vue';
 import { router } from '@inertiajs/vue3';
 
@@ -85,7 +85,7 @@ const formatDate = (dateStr: string): string => {
                         </div>
                     </td>
                     <td class="py-4 px-6 text-body-sm text-on-surface-variant dark:text-gray-400">{{ formatDate(t.created_at) }}</td>
-                    <td class="py-4 px-6"><StatusBadge :status="t.status" /></td>
+                    <td class="py-4 px-6"><StatusPill :status="t.status" /></td>
                     <td class="py-4 px-6 text-center">
                         <div class="flex items-center justify-center gap-2">
                             <button class="p-1.5 hover:bg-surface-container-high dark:hover:bg-gray-700 rounded text-outline dark:text-gray-400 hover:text-primary transition-colors">

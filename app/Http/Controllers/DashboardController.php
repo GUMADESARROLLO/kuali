@@ -11,20 +11,24 @@ class DashboardController extends Controller
     public function user(Request $request): Response
     {
         $user = $request->user();
-        $tickets = $user->createdTickets()
-            ->latest()
-            ->limit(10)
-            ->get(['id', 'ticket_number', 'title', 'status', 'priority', 'created_at']);
+        $query = \App\Models\Ticket::with(['user', 'department', 'category', 'subcategory', 'assignedAgent'])
+            ->where('department_id', $user->department_id);
 
         $stats = [
-            'abiertos' => $user->createdTickets()->where('status', 'abierto')->count(),
-            'en_proceso' => $user->createdTickets()->where('status', 'en_proceso')->count(),
-            'resueltos' => $user->createdTickets()->whereIn('status', ['resuelto', 'cerrado'])->count(),
+            'abiertos'  => (clone $query)->where('status', 'abierto')->count(),
+            'en_proceso' => (clone $query)->where('status', 'en_proceso')->count(),
+            'resueltos' => (clone $query)->whereIn('status', ['resuelto', 'cerrado'])->count(),
+            'vencidos'  => (clone $query)->whereNotNull('due_date')
+                ->where('due_date', '<', now())
+                ->whereNotIn('status', ['resuelto', 'cerrado', 'cancelado'])
+                ->count(),
         ];
+
+        $recent = (clone $query)->latest()->limit(15)->get();
 
         return Inertia::render('User/Dashboard', [
             'stats' => $stats,
-            'tickets' => $tickets,
+            'recent' => $recent,
         ]);
     }
 

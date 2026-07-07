@@ -1,124 +1,101 @@
 <script setup lang="ts">
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head } from '@inertiajs/vue3';
+import AppLayout from '@/Layouts/AppLayout.vue';
+import PriorityBadge from '@/Components/PriorityBadge.vue';
+import StatusPill from '@/Components/StatusPill.vue';
+import { Head, Link } from '@inertiajs/vue3';
 
 interface Stats {
     abiertos: number;
     en_proceso: number;
     resueltos: number;
+    vencidos: number;
 }
 
-interface TicketItem {
+interface RecentTicket {
     id: number;
     ticket_number: string;
     title: string;
     status: string;
     priority: string;
     created_at: string;
+    department?: { name: string };
+    category?: { name: string };
+    subcategory?: { name: string };
+    assigned_agent?: { name: string };
 }
 
 defineProps<{
     stats: Stats;
-    tickets: TicketItem[];
+    recent: RecentTicket[];
 }>();
-
-const statusLabel = (s: string): string => {
-    const map: Record<string, string> = {
-        abierto: 'Abierto',
-        en_proceso: 'En proceso',
-        en_espera: 'En espera',
-        resuelto: 'Resuelto',
-        cerrado: 'Cerrado',
-        cancelado: 'Cancelado',
-    };
-    return map[s] ?? s;
-};
-
-const priorityClass = (p: string): string => {
-    const map: Record<string, string> = {
-        baja: 'bg-gray-100 text-gray-700',
-        media: 'bg-blue-100 text-blue-700',
-        alta: 'bg-orange-100 text-orange-700',
-        urgente: 'bg-red-100 text-red-700',
-    };
-    return map[p] ?? 'bg-gray-100 text-gray-700';
-};
 </script>
 
 <template>
-    <Head title="Mis tickets" />
+    <AppLayout active-nav="dashboard">
+        <Head title="Mis Tickets" />
 
-    <AuthenticatedLayout>
-        <template #header>
-            <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
-                Mis tickets
-            </h2>
-        </template>
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+            <div>
+                <h2 class="text-display-lg text-deep-navy dark:text-blue-300 mb-1">Mis Tickets</h2>
+                <p class="text-body-md text-outline dark:text-gray-400">Tickets de tu departamento.</p>
+            </div>
+            <Link
+                :href="route('user.dashboard')"
+                class="bg-deep-navy hover:bg-primary text-white px-6 py-2.5 rounded-lg text-label-md flex items-center gap-2 transition-all shadow-sm hover:shadow-md active:scale-95"
+            >
+                <span class="material-symbols-outlined text-[18px]">add</span>
+                Nuevo Ticket
+            </Link>
+        </div>
 
-        <div class="py-8">
-            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-5">
-                        <div class="text-sm text-gray-500 dark:text-gray-400">Abiertos</div>
-                        <div class="mt-1 text-3xl font-semibold text-gray-900 dark:text-gray-100">
-                            {{ stats.abiertos }}
-                        </div>
-                    </div>
-                    <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-5">
-                        <div class="text-sm text-gray-500 dark:text-gray-400">En proceso</div>
-                        <div class="mt-1 text-3xl font-semibold text-gray-900 dark:text-gray-100">
-                            {{ stats.en_proceso }}
-                        </div>
-                    </div>
-                    <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-5">
-                        <div class="text-sm text-gray-500 dark:text-gray-400">Resueltos / Cerrados</div>
-                        <div class="mt-1 text-3xl font-semibold text-gray-900 dark:text-gray-100">
-                            {{ stats.resueltos }}
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg">
-                    <div class="px-5 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-                        <h3 class="text-base font-medium text-gray-900 dark:text-gray-100">
-                            Tickets recientes
-                        </h3>
-                        <a
-                            href="/mis-tickets/nuevo"
-                            class="inline-flex items-center px-3 py-1.5 bg-primary text-white text-sm font-medium rounded-md hover:bg-primary/90"
-                        >
-                            Nuevo ticket
-                        </a>
-                    </div>
-                    <div v-if="tickets.length === 0" class="p-8 text-center text-gray-500 dark:text-gray-400">
-                        Aún no has creado tickets.
-                    </div>
-                    <ul v-else class="divide-y divide-gray-200 dark:divide-gray-700">
-                        <li
-                            v-for="t in tickets"
-                            :key="t.id"
-                            class="px-5 py-3 flex items-center justify-between"
-                        >
-                            <div class="min-w-0">
-                                <div class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
-                                    {{ t.ticket_number }} · {{ t.title }}
-                                </div>
-                                <div class="text-xs text-gray-500 dark:text-gray-400">
-                                    {{ new Date(t.created_at).toLocaleDateString() }}
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span :class="['px-2 py-0.5 text-xs rounded-full', priorityClass(t.priority)]">
-                                    {{ t.priority }}
-                                </span>
-                                <span class="px-2 py-0.5 text-xs rounded-full bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-200">
-                                    {{ statusLabel(t.status) }}
-                                </span>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-white dark:bg-gray-800 rounded-xl border border-border-subtle dark:border-gray-700 p-5">
+                <div class="text-sm text-outline dark:text-gray-400">Abiertos</div>
+                <div class="mt-1 text-3xl font-bold text-deep-navy dark:text-blue-300">{{ stats.abiertos }}</div>
+            </div>
+            <div class="bg-white dark:bg-gray-800 rounded-xl border border-border-subtle dark:border-gray-700 p-5">
+                <div class="text-sm text-outline dark:text-gray-400">En proceso</div>
+                <div class="mt-1 text-3xl font-bold text-deep-navy dark:text-blue-300">{{ stats.en_proceso }}</div>
+            </div>
+            <div class="bg-white dark:bg-gray-800 rounded-xl border border-border-subtle dark:border-gray-700 p-5">
+                <div class="text-sm text-outline dark:text-gray-400">Resueltos</div>
+                <div class="mt-1 text-3xl font-bold text-success-green">{{ stats.resueltos }}</div>
+            </div>
+            <div class="bg-white dark:bg-gray-800 rounded-xl border border-border-subtle dark:border-gray-700 p-5">
+                <div class="text-sm text-outline dark:text-gray-400">Vencidos</div>
+                <div class="mt-1 text-3xl font-bold text-error">{{ stats.vencidos }}</div>
             </div>
         </div>
-    </AuthenticatedLayout>
+
+        <div class="bg-white dark:bg-gray-800 rounded-xl border border-border-subtle dark:border-gray-700 shadow-sm">
+            <div class="px-6 py-4 border-b border-border-subtle dark:border-gray-700">
+                <h3 class="text-headline-sm font-semibold text-on-surface dark:text-gray-100">Tickets recientes</h3>
+            </div>
+            <div v-if="recent.length === 0" class="p-8 text-center text-outline dark:text-gray-400 text-body-md">
+                Sin tickets a&uacute;n.
+            </div>
+            <table v-else class="w-full text-left">
+                <thead>
+                    <tr class="bg-surface-container-low dark:bg-gray-700 border-b border-border-subtle dark:border-gray-700">
+                        <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider">#</th>
+                        <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider">T&iacute;tulo</th>
+                        <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider">Categor&iacute;a</th>
+                        <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider">Prioridad</th>
+                        <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider">Estado</th>
+                        <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider">Asignado</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-border-subtle dark:divide-gray-700">
+                    <tr v-for="t in recent" :key="t.id" class="hover:bg-surface-container-lowest dark:hover:bg-gray-700/50 transition-colors">
+                        <td class="px-6 py-3 text-body-sm font-mono text-on-surface dark:text-gray-100">{{ t.ticket_number }}</td>
+                        <td class="px-6 py-3 text-body-sm text-on-surface dark:text-gray-100 truncate max-w-xs">{{ t.title }}</td>
+                        <td class="px-6 py-3 text-body-sm text-outline dark:text-gray-400">{{ t.category?.name ?? '—' }} / {{ t.subcategory?.name ?? '—' }}</td>
+                        <td class="px-6 py-3"><PriorityBadge :priority="t.priority" /></td>
+                        <td class="px-6 py-3"><StatusPill :status="t.status" /></td>
+                        <td class="px-6 py-3 text-body-sm text-outline dark:text-gray-400">{{ t.assigned_agent?.name ?? '—' }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </AppLayout>
 </template>

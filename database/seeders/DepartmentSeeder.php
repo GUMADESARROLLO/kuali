@@ -19,6 +19,7 @@ class DepartmentSeeder extends Seeder
             ['name' => 'Legal', 'description' => 'Asuntos juridicos y contractuales'],
             ['name' => 'Administracion', 'description' => 'Servicios generales y mantenimiento'],
             ['name' => 'Tecnologia', 'description' => 'Desarrollo y operaciones de TI'],
+            ['name' => 'Atencion al Cliente (SAC)', 'description' => 'Servicio de atencion al cliente y soporte comercial'],
         ];
 
         foreach ($departments as $row) {

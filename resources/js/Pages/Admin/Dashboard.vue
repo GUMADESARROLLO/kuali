@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import AppLayout from '@/Layouts/AppLayout.vue';
 import PriorityBadge from '@/Components/PriorityBadge.vue';
-import StatusBadge from '@/Components/StatusBadge.vue';
+import StatusPill from '@/Components/StatusPill.vue';
 import { Head } from '@inertiajs/vue3';
 
 interface Stats {
@@ -86,7 +86,7 @@ defineProps<{
                         <td class="px-6 py-3 text-body-sm text-outline dark:text-gray-400">{{ t.department?.name ?? '—' }}</td>
                         <td class="px-6 py-3 text-body-sm text-outline dark:text-gray-400">{{ t.category?.name ?? '—' }} / {{ t.subcategory?.name ?? '—' }}</td>
                         <td class="px-6 py-3"><PriorityBadge :priority="t.priority" /></td>
-                        <td class="px-6 py-3"><StatusBadge :status="t.status" /></td>
+                        <td class="px-6 py-3"><StatusPill :status="t.status" /></td>
                         <td class="px-6 py-3 text-body-sm text-outline dark:text-gray-400">{{ t.assigned_agent?.name ?? '—' }}</td>
                     </tr>
                 </tbody>

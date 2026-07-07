@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { computed } from 'vue';
+import { usePage } from '@inertiajs/vue3';
+
 const props = withDefaults(defineProps<{
     activeNav?: string;
 }>(), {
@@ -12,10 +15,21 @@ interface NavItem {
     route: string;
 }
 
-const navItems: NavItem[] = [
-    { key: 'dashboard', label: 'Dashboard', icon: 'dashboard', route: 'admin.dashboard' },
-    { key: 'tickets', label: 'All Tickets', icon: 'confirmation_number', route: 'admin.tickets.index' },
-];
+const auth = usePage().props.auth as any;
+const roles = auth?.roles as string[] | undefined;
+const isAdmin = computed(() => roles?.includes('admin_it') ?? roles?.includes('agente_it') ?? false);
+
+const navItems = computed<NavItem[]>(() => {
+    if (isAdmin.value) {
+        return [
+            { key: 'dashboard', label: 'Dashboard', icon: 'dashboard', route: 'admin.dashboard' },
+            { key: 'tickets', label: 'All Tickets', icon: 'confirmation_number', route: 'admin.tickets.index' },
+        ];
+    }
+    return [
+        { key: 'dashboard', label: 'Mis Tickets', icon: 'confirmation_number', route: 'user.dashboard' },
+    ];
+});
 </script>
 
 <template>

@@ -66,13 +66,13 @@ const getTabCount = (key: string): number => {
                 <h2 class="text-display-lg text-deep-navy dark:text-blue-300 mb-1">All Tickets</h2>
                 <p class="text-body-md text-outline dark:text-gray-400">Manage and respond to customer support requests.</p>
             </div>
-            <Link
-                :href="route('admin.tickets.create')"
+            <a
+                href="#"
                 class="bg-deep-navy hover:bg-primary text-white px-6 py-2.5 rounded-lg text-label-md flex items-center gap-2 transition-all shadow-sm hover:shadow-md active:scale-95"
             >
                 <span class="material-symbols-outlined text-[18px]">add</span>
                 Create Ticket
-            </Link>
+            </a>
         </div>
 
         <div class="bg-white dark:bg-gray-800 rounded-xl border border-border-subtle dark:border-gray-700 shadow-sm overflow-hidden flex flex-col">
