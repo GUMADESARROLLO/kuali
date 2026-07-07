@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { Head, useForm } from '@inertiajs/vue3';
-import { Link } from '@inertiajs/vue3';
 import LoginLayout from '@/Layouts/LoginLayout.vue';
 import FormInput from '@/Components/FormInput.vue';
 import KualiButton from '@/Components/KualiButton.vue';
+import ClockWidget from '@/Components/ClockWidget.vue';
 
 defineProps<{
-    canResetPassword?: boolean;
     status?: string;
 }>();
 
@@ -69,23 +68,12 @@ const submit = () => {
                     Acceder al Portal
                 </KualiButton>
             </form>
-
-            <div class="mt-8 pt-6 border-t border-gray-100 text-center">
-                <p class="text-sm text-gray-500">¿Tienes problemas para acceder?</p>
-                <a href="#" class="text-sm font-semibold text-primary hover:underline">Contacta a la mesa de ayuda</a>
-            </div>
         </template>
 
         <template #footer>
-            <p class="text-sm text-gray-500 mt-6">
-                <Link
-                    v-if="canResetPassword"
-                    :href="route('password.request')"
-                    class="font-semibold text-primary hover:underline"
-                >
-                    ¿Olvidaste tu contraseña?
-                </Link>
-            </p>
+            <div class="mt-12 pt-6 border-t border-gray-100">
+                <ClockWidget />
+            </div>
         </template>
     </LoginLayout>
 </template>
