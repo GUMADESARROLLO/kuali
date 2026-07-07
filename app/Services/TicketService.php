@@ -48,14 +48,8 @@ class TicketService
 
     public function generateNumber(): string
     {
-        $prefix = 'TCK-' . now()->format('Ymd') . '-';
-        $last = Ticket::where('ticket_number', 'like', $prefix . '%')
-            ->lockForUpdate()
-            ->orderBy('ticket_number', 'desc')
-            ->value('ticket_number');
-
-        $seq = $last ? (int) substr($last, -4) + 1 : 1;
-        return $prefix . str_pad($seq, 4, '0', STR_PAD_LEFT);
+        $last = Ticket::lockForUpdate()->max('id') ?? 0;
+        return 'TK-' . str_pad($last + 1, 6, '0', STR_PAD_LEFT);
     }
 
     public function uploadAttachment(Ticket $ticket, UploadedFile $file, int $userId): TicketAttachment

@@ -26,8 +26,7 @@ class TicketSeeder extends Seeder
             'sac@kuali.test',
         ])->get()->keyBy('email');
 
-        $agent = User::where('email', 'agente@kuali.test')->first();
-        $admin = User::where('email', 'admin@kuali.test')->first();
+        $agents = User::whereIn('email', ['ariel@kuali.test', 'maryan@kuali.test', 'jorge@kuali.test'])->get();
 
         $subcategories = Subcategory::with('category')->get();
 
@@ -99,13 +98,14 @@ class TicketSeeder extends Seeder
                     ? (clone $resolvedAt)->addHours(random_int(1, 24))
                     : null;
 
-                // Assign ~60% of tickets, leave ~40% unassigned
-                $assignedTo = random_int(1, 100) <= 60
-                    ? (random_int(1, 100) <= 50 ? $agent?->id : $admin?->id)
-                    : null;
+                // Assign ~60% of tickets to one of the 3 agents
+                $assignedTo = null;
+                if (random_int(1, 100) <= 60 && $agents->isNotEmpty()) {
+                    $assignedTo = $agents->random()->id;
+                }
 
                 $ticket = Ticket::create([
-                    'ticket_number' => 'TCK-' . $createdAt->format('Ymd') . '-' . strtoupper(substr(uniqid(), -5)),
+                    'ticket_number' => 'TK-000000',
                     'title' => $title,
                     'description' => $description,
                     'user_id' => $deptUser->id,
@@ -121,6 +121,10 @@ class TicketSeeder extends Seeder
                     'updated_at' => $createdAt,
                 ]);
 
+                $ticket->updateQuietly([
+                    'ticket_number' => 'TK-' . str_pad($ticket->id, 6, '0', STR_PAD_LEFT),
+                ]);
+
                 TicketHistory::create([
                     'ticket_id' => $ticket->id,
                     'user_id' => $deptUser->id,
@@ -131,11 +135,12 @@ class TicketSeeder extends Seeder
                 ]);
 
                 if ($assignedTo) {
+                    $agentName = $agents->firstWhere('id', $assignedTo)?->name ?? 'Agente';
                     TicketHistory::create([
                         'ticket_id' => $ticket->id,
                         'user_id' => $assignedTo,
                         'action' => 'asignado',
-                        'description' => 'Asignado a ' . ($assignedTo === $agent?->id ? $agent->name : $admin?->name),
+                        'description' => 'Asignado a ' . $agentName,
                         'created_at' => (clone $createdAt)->addMinutes(random_int(5, 120)),
                         'updated_at' => (clone $createdAt)->addMinutes(random_int(5, 120)),
                     ]);
