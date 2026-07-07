@@ -19,14 +19,14 @@ const navItems: NavItem[] = [
 </script>
 
 <template>
-    <aside class="w-20 lg:w-64 h-screen fixed left-0 top-0 bg-white border-r border-border-subtle flex flex-col py-6 px-4 z-20">
+    <aside class="w-20 lg:w-64 h-screen fixed left-0 top-0 bg-white dark:bg-gray-900 border-r border-border-subtle dark:border-gray-700 flex flex-col py-6 px-4 z-20">
         <div class="mb-10 flex items-center gap-3 px-2">
             <div class="w-10 h-10 bg-deep-navy rounded flex items-center justify-center text-white shrink-0">
                 <span class="material-symbols-outlined text-white" style="font-variation-settings:'FILL' 1;">confirmation_number</span>
             </div>
             <div class="hidden lg:block overflow-hidden">
-                <h1 class="text-headline-sm font-bold text-deep-navy truncate">Kuali</h1>
-                <p class="text-label-sm text-outline">IT Support</p>
+                <h1 class="text-headline-sm font-bold text-deep-navy dark:text-blue-300 truncate">Kuali</h1>
+                <p class="text-label-sm text-outline dark:text-gray-400">IT Support</p>
             </div>
         </div>
 
@@ -38,8 +38,8 @@ const navItems: NavItem[] = [
                 :class="[
                     'flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 cursor-pointer',
                     activeNav === item.key
-                        ? 'bg-secondary-container text-on-secondary-container font-bold scale-95'
-                        : 'text-on-surface-variant hover:bg-surface-container-low'
+                        ? 'bg-secondary-container dark:bg-green-900 text-on-secondary-container dark:text-green-200 font-bold scale-95'
+                        : 'text-on-surface-variant dark:text-gray-300 hover:bg-surface-container-low dark:hover:bg-gray-800'
                 ]"
             >
                 <span class="material-symbols-outlined">{{ item.icon }}</span>

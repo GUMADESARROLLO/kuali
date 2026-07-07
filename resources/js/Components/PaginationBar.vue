@@ -21,11 +21,11 @@ const goTo = (url: string | null) => {
 </script>
 
 <template>
-    <div class="p-6 bg-surface-container-lowest flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-border-subtle">
-        <p class="text-body-sm text-outline">
-            Showing <span class="font-bold text-on-surface">{{ from }}</span>
-            to <span class="font-bold text-on-surface">{{ to }}</span>
-            of <span class="font-bold text-on-surface">{{ total }}</span> tickets
+    <div class="p-6 bg-surface-container-lowest dark:bg-gray-800 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-border-subtle dark:border-gray-700">
+        <p class="text-body-sm text-outline dark:text-gray-400">
+            Showing <span class="font-bold text-on-surface dark:text-gray-100">{{ from }}</span>
+            to <span class="font-bold text-on-surface dark:text-gray-100">{{ to }}</span>
+            of <span class="font-bold text-on-surface dark:text-gray-100">{{ total }}</span> tickets
         </p>
 
         <div class="flex items-center gap-2">
@@ -37,10 +37,10 @@ const goTo = (url: string | null) => {
                 :class="[
                     'min-w-9 h-9 flex items-center justify-center rounded-lg text-label-sm transition-colors',
                     link.active
-                        ? 'bg-deep-navy text-white font-bold'
+                        ? 'bg-deep-navy dark:bg-blue-600 text-white font-bold'
                         : link.url
-                            ? 'border border-border-subtle text-outline hover:bg-surface-container-low'
-                            : 'text-outline/30 cursor-not-allowed'
+                            ? 'border border-border-subtle dark:border-gray-600 text-outline dark:text-gray-300 hover:bg-surface-container-low dark:hover:bg-gray-700'
+                            : 'text-outline/30 dark:text-gray-600 cursor-not-allowed'
                 ]"
                 v-html="link.label"
             />

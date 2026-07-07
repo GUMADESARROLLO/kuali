@@ -63,8 +63,8 @@ const getTabCount = (key: string): number => {
         <!-- Page Header -->
         <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
             <div>
-                <h2 class="text-display-lg text-deep-navy mb-1">All Tickets</h2>
-                <p class="text-body-md text-outline">Manage and respond to customer support requests.</p>
+                <h2 class="text-display-lg text-deep-navy dark:text-blue-300 mb-1">All Tickets</h2>
+                <p class="text-body-md text-outline dark:text-gray-400">Manage and respond to customer support requests.</p>
             </div>
             <Link
                 :href="route('admin.tickets.create')"
@@ -75,17 +75,15 @@ const getTabCount = (key: string): number => {
             </Link>
         </div>
 
-        <!-- Content Card -->
-        <div class="bg-white rounded-xl border border-border-subtle shadow-sm overflow-hidden flex flex-col">
-            <!-- Status Filter Tabs -->
-            <div class="flex items-center gap-6 px-6 pt-4 border-b border-border-subtle overflow-x-auto no-scrollbar">
+        <div class="bg-white dark:bg-gray-800 rounded-xl border border-border-subtle dark:border-gray-700 shadow-sm overflow-hidden flex flex-col">
+            <div class="flex items-center gap-6 px-6 pt-4 border-b border-border-subtle dark:border-gray-700 overflow-x-auto no-scrollbar">
                 <button
                     v-for="tab in tabs"
                     :key="tab.key"
                     @click="switchTab(tab.key)"
                     :class="[
                         'text-label-md pb-4 flex items-center gap-2 whitespace-nowrap transition-colors relative',
-                        currentTab === tab.key ? 'text-primary active-tab' : 'text-outline hover:text-on-surface-variant'
+                        currentTab === tab.key ? 'text-primary active-tab' : 'text-outline dark:text-gray-400 hover:text-on-surface-variant dark:hover:text-gray-200'
                     ]"
                 >
                     {{ tab.label }}
@@ -94,7 +92,7 @@ const getTabCount = (key: string): number => {
                             'px-1.5 py-0.5 rounded text-[10px]',
                             currentTab === tab.key
                                 ? 'bg-primary-container text-on-primary-container'
-                                : 'bg-surface-container-highest text-outline'
+                                : 'bg-surface-container-highest dark:bg-gray-600 text-outline dark:text-gray-300'
                         ]"
                     >
                         {{ getTabCount(tab.key) }}
@@ -102,28 +100,27 @@ const getTabCount = (key: string): number => {
                 </button>
             </div>
 
-            <!-- Filter Bar -->
-            <div class="p-4 flex flex-wrap items-center justify-between gap-4 bg-surface-container-lowest">
+            <div class="p-4 flex flex-wrap items-center justify-between gap-4 bg-surface-container-lowest dark:bg-gray-800/50">
                 <div class="flex flex-wrap items-center gap-3">
-                    <button class="flex items-center gap-2 px-3 py-1.5 border border-border-subtle rounded-lg text-body-sm hover:bg-surface-container-low transition-colors">
+                    <button class="flex items-center gap-2 px-3 py-1.5 border border-border-subtle dark:border-gray-600 rounded-lg text-body-sm dark:text-gray-300 hover:bg-surface-container-low dark:hover:bg-gray-700 transition-colors">
                         <span class="material-symbols-outlined text-[18px]">filter_list</span>
                         Add Filter
                     </button>
-                    <div class="flex items-center gap-2 px-3 py-1.5 border border-border-subtle rounded-lg text-body-sm bg-white">
-                        <span class="text-outline">Priority:</span>
+                    <div class="flex items-center gap-2 px-3 py-1.5 border border-border-subtle dark:border-gray-600 rounded-lg text-body-sm bg-white dark:bg-gray-700 dark:text-gray-200">
+                        <span class="text-outline dark:text-gray-400">Priority:</span>
                         <span class="font-medium">All</span>
                         <span class="material-symbols-outlined text-[18px]">expand_more</span>
                     </div>
-                    <div class="flex items-center gap-2 px-3 py-1.5 border border-border-subtle rounded-lg text-body-sm bg-white">
-                        <span class="text-outline">Status:</span>
+                    <div class="flex items-center gap-2 px-3 py-1.5 border border-border-subtle dark:border-gray-600 rounded-lg text-body-sm bg-white dark:bg-gray-700 dark:text-gray-200">
+                        <span class="text-outline dark:text-gray-400">Status:</span>
                         <span class="font-medium">All</span>
                         <span class="material-symbols-outlined text-[18px]">expand_more</span>
                     </div>
-                    <button class="text-error text-label-sm hover:underline ml-2">Reset</button>
+                    <button class="text-error dark:text-red-400 text-label-sm hover:underline ml-2">Reset</button>
                 </div>
                 <div class="flex items-center gap-2">
-                    <span class="text-label-sm text-outline">Show</span>
-                    <select class="border-border-subtle rounded-lg text-label-sm py-1 focus:ring-primary focus:border-primary">
+                    <span class="text-label-sm text-outline dark:text-gray-400">Show</span>
+                    <select class="border-border-subtle dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-lg text-label-sm py-1 focus:ring-primary focus:border-primary">
                         <option>10 / page</option>
                         <option>25 / page</option>
                         <option>50 / page</option>

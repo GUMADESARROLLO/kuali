@@ -11,7 +11,7 @@ defineProps<{
     <Sidebar :active-nav="activeNav" />
     <TopBar />
 
-    <main class="pt-16 pl-20 lg:pl-64 min-h-screen bg-surface-gray">
+    <main class="pt-16 pl-20 lg:pl-64 min-h-screen bg-surface-gray dark:bg-gray-800">
         <div class="max-w-[1280px] mx-auto p-4 md:p-8">
             <slot />
         </div>
