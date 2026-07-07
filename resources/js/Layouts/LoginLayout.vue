@@ -33,7 +33,7 @@ import AppLogo from '@/Components/AppLogo.vue';
             <img
                 alt="Professional working on laptop"
                 class="absolute inset-0 w-full h-full object-cover"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGndgQzsDnsPO6Dy8d_ySnVdRujKeYhZCsGDt_3jnEt8fcgDOjG1NS0LbIhvDPFUqlLDGdIFpMRIT7Jve8C4b8RALXLNGqK5-9JpLYCCHsrYeuXxlxfYez4DouWxs_x_vfndegoc9Ftdzw_rSNMH7F-yEHI6B_CwmxOWj2MtMUU5fohiV5DcjAVNejOMOkndyXRvXJQ1BHmiJ1F6zpRPQfK16IB6tJhjdM7qFJRva1PimcPE1xLZw62LWvnU5kZ5ELf01TzsjOJMc"
+                src="img/bg-login.png"
             />
             <div class="absolute inset-0 hero-gradient-overlay" />
             <div class="absolute inset-0 p-20 flex flex-col justify-start text-white">
