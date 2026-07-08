@@ -13,7 +13,7 @@ class TicketController extends Controller
     public function create(Request $request)
     {
         return Inertia::render('User/Tickets/Create', [
-            'categories' => Category::active()->get(['id', 'name']),
+            'categories' => Category::active()->orderBy('sort_order')->get(['id', 'name']),
         ]);
     }
 

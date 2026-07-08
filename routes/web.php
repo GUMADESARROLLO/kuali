@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\DepartmentController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\TicketController as AdminTicketController;
@@ -57,6 +58,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/usuarios/{user}/editar', [AdminUserController::class, 'edit'])->name('users.edit');
         Route::post('/usuarios/{user}', [AdminUserController::class, 'update'])->name('users.update');
         Route::delete('/usuarios/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
+
+        Route::get('/categorias', [AdminCategoryController::class, 'index'])->name('categories.index');
+        Route::get('/categorias/crear', [AdminCategoryController::class, 'create'])->name('categories.create');
+        Route::post('/categorias', [AdminCategoryController::class, 'store'])->name('categories.store');
+        Route::get('/categorias/{category}/editar', [AdminCategoryController::class, 'edit'])->name('categories.edit');
+        Route::put('/categorias/{category}', [AdminCategoryController::class, 'update'])->name('categories.update');
+        Route::delete('/categorias/{category}', [AdminCategoryController::class, 'destroy'])->name('categories.destroy');
+        Route::post('/categorias/{category}/subcategorias', [AdminCategoryController::class, 'storeSubcategory'])->name('categories.subcategories.store');
+        Route::put('/subcategorias/{subcategory}', [AdminCategoryController::class, 'updateSubcategory'])->name('subcategories.update');
+        Route::delete('/subcategorias/{subcategory}', [AdminCategoryController::class, 'destroySubcategory'])->name('subcategories.destroy');
+        Route::post('/categorias/reordenar', [AdminCategoryController::class, 'reorderCategories'])->name('categories.reorder');
+        Route::post('/subcategorias/reordenar', [AdminCategoryController::class, 'reorderSubcategories'])->name('subcategories.reorder');
 
         Route::get('/reportes', [ReportController::class, 'index'])->name('reports.index');
         Route::get('/reportes/exportar', [ReportController::class, 'export'])->name('reports.export');

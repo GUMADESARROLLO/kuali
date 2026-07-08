@@ -58,7 +58,7 @@ class TicketController extends Controller
         $departments = Department::active()->get(['id', 'name']);
 
         return Inertia::render('Admin/Tickets/Create', [
-            'categories' => Category::active()->get(['id', 'name']),
+            'categories' => Category::active()->orderBy('sort_order')->get(['id', 'name']),
             'departments' => $departments,
             'agents' => [],
         ]);

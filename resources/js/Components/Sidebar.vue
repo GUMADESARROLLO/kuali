@@ -26,6 +26,7 @@ const navItems = computed<NavItem[]>(() => {
         return [
             { key: 'dashboard', label: 'Dashboard', icon: 'dashboard', route: 'admin.dashboard' },
             { key: 'tickets', label: 'All Tickets', icon: 'confirmation_number', route: 'admin.tickets.index' },
+            { key: 'categories', label: 'Categorías', icon: 'category', route: 'admin.categories.index' },
             { key: 'reports', label: 'Reportes', icon: 'monitoring', route: 'admin.reports.index' },
             { key: 'departments', label: 'Departamentos', icon: 'business', route: 'admin.departments.index' },
             { key: 'users', label: 'Usuarios', icon: 'group', route: 'admin.users.index' },

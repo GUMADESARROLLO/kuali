@@ -47,7 +47,7 @@ watch([selectedCategory, selectedSubcategory], () => {
                 class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             >
                 <option :value="null" disabled>Seleccionar categor&iacute;a</option>
-                <option v-for="c in categories" :key="c.id" :value="c.id">{{ c.name }}</option>
+                <option v-for="c in categories" :key="c.id" :value="c.id" class="uppercase">{{ c.name.toUpperCase() }}</option>
             </select>
         </div>
         <div class="space-y-2">
@@ -60,7 +60,7 @@ watch([selectedCategory, selectedSubcategory], () => {
                 <option :value="null" disabled>
                     {{ loading ? 'Cargando...' : 'Seleccionar subcategor&iacute;a' }}
                 </option>
-                <option v-for="s in subcategories" :key="s.id" :value="s.id">{{ s.name }}</option>
+                <option v-for="s in subcategories" :key="s.id" :value="s.id" class="uppercase">{{ s.name.toUpperCase() }}</option>
             </select>
         </div>
     </div>

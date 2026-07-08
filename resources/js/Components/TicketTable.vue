@@ -55,7 +55,6 @@ const formatDate = (dateStr: string): string => {
                     <th class="py-4 px-6 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider w-28">
                         <div class="flex items-center gap-1">Status <span class="material-symbols-outlined text-[16px]">swap_vert</span></div>
                     </th>
-                    <th class="py-4 px-6 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider w-32 text-center">Actions</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-border-subtle dark:divide-gray-700">
@@ -82,22 +81,10 @@ const formatDate = (dateStr: string): string => {
                     </td>
                     <td class="py-4 px-6 text-body-sm text-on-surface-variant dark:text-gray-400">{{ formatDate(t.created_at) }}</td>
                     <td class="py-4 px-6"><StatusPill :status="t.status" /></td>
-                    <td class="py-4 px-6 text-center">
-                        <div class="flex items-center justify-center gap-2">
-                            <button class="p-1.5 hover:bg-surface-container-high dark:hover:bg-gray-700 rounded text-outline dark:text-gray-400 hover:text-primary transition-colors">
-                                <span class="material-symbols-outlined text-[20px]">edit</span>
-                            </button>
-                            <button
-                                @click="viewTicket(t)"
-                                class="px-3 py-1 border border-border-subtle dark:border-gray-600 hover:border-deep-navy rounded text-label-sm font-semibold hover:bg-deep-navy hover:text-white dark:hover:bg-blue-600 transition-all"
-                            >
-                                Manage
-                            </button>
-                        </div>
-                    </td>
+
                 </tr>
                 <tr v-if="tickets.length === 0">
-                    <td colspan="7" class="py-12 text-center text-outline dark:text-gray-400 text-body-md">No tickets found.</td>
+                    <td colspan="6" class="py-12 text-center text-outline dark:text-gray-400 text-body-md">No tickets found.</td>
                 </tr>
             </tbody>
         </table>
