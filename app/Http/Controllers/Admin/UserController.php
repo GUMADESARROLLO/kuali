@@ -24,12 +24,16 @@ class UserController extends Controller
                 'email' => $u->email,
                 'phone' => $u->phone,
                 'is_active' => $u->is_active,
+                'department_id' => $u->department_id,
                 'department' => $u->department?->name,
                 'roles' => $u->getRoleNames()->implode(', '),
+                'role' => $u->getRoleNames()->first(),
             ]);
 
         return Inertia::render('Admin/Users/Index', [
             'users' => $users,
+            'departments' => Department::active()->orderBy('name')->get(['id', 'name']),
+            'roles' => Role::all()->pluck('name'),
         ]);
     }
 
