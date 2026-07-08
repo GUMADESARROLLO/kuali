@@ -3,6 +3,14 @@ import { ref } from 'vue';
 import { usePage, router } from '@inertiajs/vue3';
 import DarkModeToggle from '@/Components/DarkModeToggle.vue';
 
+defineProps<{
+    collapsed?: boolean;
+}>();
+
+defineEmits<{
+    toggleSidebar: [];
+}>();
+
 const page = usePage();
 const user = page.props.auth?.user as { name: string; email: string } | undefined;
 
@@ -22,7 +30,11 @@ const logout = () => {
 </script>
 
 <template>
-    <header class="h-16 fixed top-0 right-0 left-20 lg:left-64 z-10 bg-white dark:bg-gray-900 border-b border-border-subtle dark:border-gray-700 px-4 md:px-8 flex justify-end items-center gap-2">
+    <header class="h-16 fixed top-0 right-0 z-10 bg-white dark:bg-gray-900 border-b border-border-subtle dark:border-gray-700 px-4 md:px-8 flex items-center gap-2 transition-all duration-300 left-20" :class="collapsed ? '' : 'lg:left-64'">
+        <button @click="$emit('toggleSidebar')" class="w-10 h-10 rounded-full hover:bg-surface-container-low dark:hover:bg-gray-800 transition-colors flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-on-surface-variant dark:text-gray-300">menu</span>
+        </button>
+        <div class="flex-1" />
         <DarkModeToggle />
         <div class="relative">
             <div

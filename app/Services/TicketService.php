@@ -52,14 +52,15 @@ class TicketService
         return 'TK-' . str_pad($last + 1, 6, '0', STR_PAD_LEFT);
     }
 
-    public function uploadAttachment(Ticket $ticket, UploadedFile $file, int $userId): TicketAttachment
+    public function uploadAttachment(Ticket $ticket, UploadedFile $file, int $userId, ?int $commentId = null): TicketAttachment
     {
-        $path = $file->store('tickets/' . $ticket->id, [
+        $path = $file->storeAs($ticket->ticket_number, $file->getClientOriginalName(), [
             'disk' => config('filesystems.default'),
         ]);
 
         $attachment = TicketAttachment::create([
             'ticket_id' => $ticket->id,
+            'comment_id' => $commentId,
             'file_path' => $path,
             'file_name' => $file->getClientOriginalName(),
             'file_type' => $file->getMimeType(),

@@ -3,16 +3,14 @@ import { ref, computed } from 'vue';
 
 const files = defineModel<File[]>({ required: true });
 
-const dragOver = ref(false);
-const inputRef = ref<HTMLInputElement | null>(null);
-
-const MAX_SIZE = 10 * 1024 * 1024; // 10MB
+const MAX_SIZE = 10 * 1024 * 1024;
 const ALLOWED = ['application/pdf', 'image/png', 'image/jpeg', 'image/jpg',
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     'application/zip'];
 
 const error = ref('');
+const fileInput = ref<HTMLInputElement | null>(null);
 
 const fileList = computed(() => Array.from(files.value || []));
 
@@ -32,10 +30,31 @@ const addFiles = (newFiles: FileList | null | undefined) => {
         valid.push(f);
     }
     if (files.value.length + valid.length > 5) {
-        error.value = 'M&aacute;ximo 5 archivos.';
+        error.value = 'Máximo 5 archivos.';
         return;
     }
     files.value = [...files.value, ...valid];
+};
+
+const openFilePicker = () => fileInput.value?.click();
+const onFileChange = (e: Event) => {
+    addFiles((e.target as HTMLInputElement).files);
+    if (fileInput.value) fileInput.value.value = '';
+};
+
+defineExpose({ addFiles, openFilePicker });
+
+const iconFor = (name: string): string => {
+    if (/\.pdf$/i.test(name)) return '📄';
+    if (/\.(png|jpe?g|gif)$/i.test(name)) return '🖼️';
+    if (/\.zip$/i.test(name)) return '🗜️';
+    if (/\.(docx?|xlsx?)$/i.test(name)) return '📑';
+    return '📎';
+};
+
+const formatSize = (bytes: number): string => {
+    if (bytes < 1024 * 1024) return Math.round(bytes / 1024) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
 };
 
 const removeFile = (index: number) => {
@@ -43,59 +62,21 @@ const removeFile = (index: number) => {
     arr.splice(index, 1);
     files.value = arr;
 };
-
-const formatSize = (bytes: number): string => {
-    if (bytes < 1024) return bytes + ' B';
-    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
-};
 </script>
 
 <template>
-    <div class="space-y-3">
-        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-200">Adjuntos</label>
-
+    <input ref="fileInput" type="file" multiple :accept="ALLOWED.join(',')" class="hidden" @change="onFileChange" />
+    <p v-if="error" class="text-error text-label-sm mb-2">{{ error }}</p>
+    <div v-if="fileList.length" class="flex flex-wrap gap-2 mb-2">
         <div
-            class="border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-colors"
-            :class="dragOver
-                ? 'border-primary bg-primary/5'
-                : 'border-gray-300 dark:border-gray-600 hover:border-primary dark:hover:border-primary'"
-            @drop.prevent="dragOver = false; addFiles(($event as DragEvent).dataTransfer?.files)"
-            @dragover.prevent="dragOver = true"
-            @dragleave="dragOver = false"
-            @click="inputRef?.click()"
+            v-for="(f, i) in fileList"
+            :key="i"
+            class="inline-flex items-center gap-2 bg-surface-container-low dark:bg-gray-700 border border-border-subtle dark:border-gray-600 rounded-lg px-3 py-1.5 text-label-sm text-on-surface-variant dark:text-gray-300"
         >
-            <input
-                ref="inputRef"
-                type="file"
-                multiple
-                :accept="ALLOWED.join(',')"
-                class="hidden"
-                @change="addFiles(($event.target as HTMLInputElement).files)"
-            />
-            <span class="material-symbols-outlined text-4xl text-outline mb-2">cloud_upload</span>
-            <p class="text-body-sm text-outline dark:text-gray-300">
-                Arrastra archivos aqu&iacute; o haz clic para seleccionar
-            </p>
-            <p class="text-label-sm text-outline mt-1">PDF, PNG, JPG, DOCX, XLSX, ZIP — m&aacute;x 10MB c/u</p>
+            <span class="text-sm leading-none">{{ iconFor(f.name) }}</span>
+            <span class="max-w-[160px] truncate">{{ f.name }}</span>
+            <span class="text-outline dark:text-gray-500 text-[11px]">{{ formatSize(f.size) }}</span>
+            <button @click.prevent="removeFile(i)" class="text-outline dark:text-gray-400 hover:text-error dark:hover:text-red-400 transition-colors leading-none px-0.5">✕</button>
         </div>
-
-        <p v-if="error" class="text-error text-label-sm">{{ error }}</p>
-
-        <ul v-if="fileList.length" class="space-y-2">
-            <li
-                v-for="(f, i) in fileList"
-                :key="i"
-                class="flex items-center justify-between px-3 py-2 bg-surface-container-low dark:bg-gray-700 rounded-lg"
-            >
-                <span class="text-body-sm text-on-surface dark:text-gray-200 truncate max-w-xs">{{ f.name }}</span>
-                <div class="flex items-center gap-3 shrink-0">
-                    <span class="text-label-sm text-outline">{{ formatSize(f.size) }}</span>
-                    <button @click.prevent="removeFile(i)" class="text-error hover:opacity-80">
-                        <span class="material-symbols-outlined text-[18px]">close</span>
-                    </button>
-                </div>
-            </li>
-        </ul>
     </div>
 </template>

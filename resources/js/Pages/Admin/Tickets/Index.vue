@@ -28,12 +28,39 @@ interface PaginationMeta {
 const props = defineProps<{
     tickets: PaginationMeta;
     activeTab: string;
+    activePerPage?: number;
+    unassignedCount?: number;
 }>();
 
 const currentTab = ref(props.activeTab || 'all');
+const currentPerPage = ref(props.activePerPage || 10);
+const searchQuery = ref('');
+let searchTimer: ReturnType<typeof setTimeout> | null = null;
+
+const doSearch = () => {
+    const params: Record<string, string> = {};
+    if (currentTab.value === 'unassigned') {
+        params.assigned = 'no';
+    } else if (currentTab.value !== 'all') {
+        params.status = currentTab.value;
+    }
+    if (searchQuery.value) {
+        params.search = searchQuery.value;
+    }
+    if (currentPerPage.value !== 10) {
+        params.per_page = String(currentPerPage.value);
+    }
+    router.get(route('admin.tickets.index'), params, { preserveState: true, preserveScroll: true, replace: true });
+};
+
+const onSearchInput = () => {
+    if (searchTimer) clearTimeout(searchTimer);
+    searchTimer = setTimeout(doSearch, 400);
+};
 
 const tabs = [
     { key: 'all', label: 'ALL' },
+    { key: 'unassigned', label: 'UNASSIGNED' },
     { key: 'abierto', label: 'OPEN' },
     { key: 'en_proceso', label: 'IN PROGRESS' },
     { key: 'en_espera', label: 'ON-HOLD' },
@@ -43,15 +70,18 @@ const tabs = [
 
 const switchTab = (tab: string) => {
     currentTab.value = tab;
-    router.get(
-        route('admin.tickets.index'),
-        { status: tab === 'all' ? undefined : tab },
-        { preserveState: true, preserveScroll: true, replace: true },
-    );
+    searchQuery.value = '';
+    doSearch();
+};
+
+const changePerPage = (e: Event) => {
+    currentPerPage.value = Number((e.target as HTMLSelectElement).value);
+    doSearch();
 };
 
 const getTabCount = (key: string): number => {
     if (key === 'all') return props.tickets.total;
+    if (key === 'unassigned') return props.unassignedCount ?? 0;
     return key === props.activeTab ? props.tickets.data.length : 0;
 };
 </script>
@@ -101,29 +131,25 @@ const getTabCount = (key: string): number => {
             </div>
 
             <div class="p-4 flex flex-wrap items-center justify-between gap-4 bg-surface-container-lowest dark:bg-gray-800/50">
-                <div class="flex flex-wrap items-center gap-3">
-                    <button class="flex items-center gap-2 px-3 py-1.5 border border-border-subtle dark:border-gray-600 rounded-lg text-body-sm dark:text-gray-300 hover:bg-surface-container-low dark:hover:bg-gray-700 transition-colors">
-                        <span class="material-symbols-outlined text-[18px]">filter_list</span>
-                        Add Filter
-                    </button>
-                    <div class="flex items-center gap-2 px-3 py-1.5 border border-border-subtle dark:border-gray-600 rounded-lg text-body-sm bg-white dark:bg-gray-700 dark:text-gray-200">
-                        <span class="text-outline dark:text-gray-400">Priority:</span>
-                        <span class="font-medium">All</span>
-                        <span class="material-symbols-outlined text-[18px]">expand_more</span>
-                    </div>
-                    <div class="flex items-center gap-2 px-3 py-1.5 border border-border-subtle dark:border-gray-600 rounded-lg text-body-sm bg-white dark:bg-gray-700 dark:text-gray-200">
-                        <span class="text-outline dark:text-gray-400">Status:</span>
-                        <span class="font-medium">All</span>
-                        <span class="material-symbols-outlined text-[18px]">expand_more</span>
-                    </div>
-                    <button class="text-error dark:text-red-400 text-label-sm hover:underline ml-2">Reset</button>
+                <div class="relative flex-1 max-w-md">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[18px]">search</span>
+                    <input
+                        v-model="searchQuery"
+                        @input="onSearchInput"
+                        class="w-full pl-10 pr-4 py-2 border border-border-subtle dark:border-gray-600 rounded-lg text-body-sm bg-white dark:bg-gray-700 dark:text-gray-200 focus:ring-primary focus:border-primary outline-none"
+                        placeholder="Search by ticket #, title, or description..."
+                    />
                 </div>
                 <div class="flex items-center gap-2">
-                    <span class="text-label-sm text-outline dark:text-gray-400">Show</span>
-                    <select class="border-border-subtle dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-lg text-label-sm py-1 focus:ring-primary focus:border-primary">
-                        <option>10 / page</option>
-                        <option>25 / page</option>
-                        <option>50 / page</option>
+                    <span class="text-label-sm text-outline dark:text-gray-400 shrink-0">Show</span>
+                    <select
+                        :value="currentPerPage"
+                        @change="changePerPage"
+                        class="border-border-subtle dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-lg text-label-sm py-1 focus:ring-primary focus:border-primary"
+                    >
+                        <option :value="10">10 / page</option>
+                        <option :value="25">25 / page</option>
+                        <option :value="50">50 / page</option>
                     </select>
                 </div>
             </div>

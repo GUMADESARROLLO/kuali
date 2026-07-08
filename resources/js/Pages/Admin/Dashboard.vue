@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed, ref } from 'vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import PriorityBadge from '@/Components/PriorityBadge.vue';
 import StatusPill from '@/Components/StatusPill.vue';
@@ -24,10 +25,24 @@ interface RecentTicket {
     assigned_agent?: { name: string };
 }
 
-defineProps<{
+const props = defineProps<{
     stats: Stats;
     recent: RecentTicket[];
 }>();
+
+const search = ref('');
+
+const filteredRecent = computed(() => {
+    if (!search.value) return props.recent;
+    const q = search.value.toLowerCase();
+    return props.recent.filter(t =>
+        t.ticket_number.toLowerCase().includes(q) ||
+        t.title.toLowerCase().includes(q) ||
+        t.department?.name?.toLowerCase().includes(q) ||
+        t.category?.name?.toLowerCase().includes(q) ||
+        t.assigned_agent?.name?.toLowerCase().includes(q)
+    );
+});
 </script>
 
 <template>
@@ -61,11 +76,19 @@ defineProps<{
         </div>
 
         <div class="bg-white dark:bg-gray-800 rounded-xl border border-border-subtle dark:border-gray-700 shadow-sm">
-            <div class="px-6 py-4 border-b border-border-subtle dark:border-gray-700">
-                <h3 class="text-headline-sm font-semibold text-on-surface dark:text-gray-100">Tickets recientes</h3>
+            <div class="px-6 py-4 border-b border-border-subtle dark:border-gray-700 flex items-center justify-between gap-4">
+                <h3 class="text-headline-sm font-semibold text-on-surface dark:text-gray-100 shrink-0">Tickets recientes</h3>
+                <div class="relative max-w-xs w-full">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[16px]">search</span>
+                    <input
+                        v-model="search"
+                        class="w-full pl-9 pr-3 py-1.5 border border-border-subtle dark:border-gray-600 rounded-lg text-body-sm bg-surface-container-low dark:bg-gray-700 dark:text-gray-200 focus:ring-primary focus:border-primary outline-none"
+                        placeholder="Search recent tickets..."
+                    />
+                </div>
             </div>
-            <div v-if="recent.length === 0" class="p-8 text-center text-outline dark:text-gray-400 text-body-md">
-                Sin tickets a&uacute;n.
+            <div v-if="filteredRecent.length === 0" class="p-8 text-center text-outline dark:text-gray-400 text-body-md">
+                {{ search ? 'No tickets match your search.' : 'Sin tickets a&uacute;n.' }}
             </div>
             <table v-else class="w-full text-left">
                 <thead>
@@ -80,7 +103,7 @@ defineProps<{
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-border-subtle dark:divide-gray-700">
-                    <tr v-for="t in recent" :key="t.id" class="hover:bg-surface-container-lowest dark:hover:bg-gray-700/50 transition-colors cursor-pointer" @click="router.get(route('admin.tickets.show', { ticket: t.id }))">
+                    <tr v-for="t in filteredRecent" :key="t.id" class="hover:bg-surface-container-lowest dark:hover:bg-gray-700/50 transition-colors cursor-pointer" @click="router.get(route('admin.tickets.show', { ticket: t.id }))">
                         <td class="px-6 py-3 text-body-sm font-mono text-on-surface dark:text-gray-100">{{ t.ticket_number }}</td>
                         <td class="px-6 py-3 text-body-sm text-on-surface dark:text-gray-100 truncate max-w-xs">{{ t.title }}</td>
                         <td class="px-6 py-3 text-body-sm text-outline dark:text-gray-400">{{ t.department?.name ?? '—' }}</td>

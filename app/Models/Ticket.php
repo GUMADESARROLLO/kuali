@@ -78,7 +78,7 @@ class Ticket extends Model
 
     public function comments(): HasMany
     {
-        return $this->hasMany(TicketComment::class)->latest();
+        return $this->hasMany(TicketComment::class);
     }
 
     public function histories(): HasMany
