@@ -17,23 +17,48 @@ interface NavItem {
     route: string;
 }
 
+interface NavSection {
+    title?: string;
+    items: NavItem[];
+}
+
 const auth = usePage().props.auth as any;
 const roles = auth?.roles as string[] | undefined;
 const isAdmin = computed(() => roles?.includes('admin_it') ?? roles?.includes('agente_it') ?? false);
 
-const navItems = computed<NavItem[]>(() => {
+const navSections = computed<NavSection[]>(() => {
     if (isAdmin.value) {
         return [
-            { key: 'dashboard', label: 'Dashboard', icon: 'dashboard', route: 'admin.dashboard' },
-            { key: 'tickets', label: 'All Tickets', icon: 'confirmation_number', route: 'admin.tickets.index' },
-            { key: 'categories', label: 'Categorías', icon: 'category', route: 'admin.categories.index' },
-            { key: 'reports', label: 'Reportes', icon: 'monitoring', route: 'admin.reports.index' },
-            { key: 'departments', label: 'Departamentos', icon: 'business', route: 'admin.departments.index' },
-            { key: 'users', label: 'Usuarios', icon: 'group', route: 'admin.users.index' },
+            {
+                title: undefined,
+                items: [
+                    { key: 'dashboard', label: 'Dashboard', icon: 'dashboard', route: 'admin.dashboard' },
+                    { key: 'tickets', label: 'All Tickets', icon: 'confirmation_number', route: 'admin.tickets.index' },
+                ],
+            },
+            {
+                title: 'Configuración',
+                items: [
+                    { key: 'users', label: 'Usuarios', icon: 'group', route: 'admin.users.index' },
+                    { key: 'departments', label: 'Departamentos', icon: 'business', route: 'admin.departments.index' },
+                    { key: 'categories', label: 'Categorías', icon: 'category', route: 'admin.categories.index' },
+                ],
+            },
+            {
+                title: undefined,
+                items: [
+                    { key: 'reports', label: 'Reportes', icon: 'monitoring', route: 'admin.reports.index' },
+                ],
+            },
         ];
     }
     return [
-        { key: 'dashboard', label: 'Mis Tickets', icon: 'confirmation_number', route: 'user.dashboard' },
+        {
+            title: undefined,
+            items: [
+                { key: 'dashboard', label: 'Mis Tickets', icon: 'confirmation_number', route: 'user.dashboard' },
+            ],
+        },
     ];
 });
 </script>
@@ -53,22 +78,29 @@ const navItems = computed<NavItem[]>(() => {
             </div>
         </div>
 
-        <nav class="flex-1 space-y-2">
-            <a
-                v-for="item in navItems"
-                :key="item.key"
-                :href="route(item.route)"
-                :title="collapsed ? item.label : undefined"
-                :class="[
-                    'flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 cursor-pointer justify-center lg:justify-start',
-                    activeNav === item.key
-                        ? 'bg-secondary-container dark:bg-green-900 text-on-secondary-container dark:text-green-200 font-bold'
-                        : 'text-on-surface-variant dark:text-gray-300 hover:bg-surface-container-low dark:hover:bg-gray-800'
-                ]"
-            >
-                <span class="material-symbols-outlined">{{ item.icon }}</span>
-                <span class="overflow-hidden transition-all duration-300" :class="collapsed ? 'w-0 opacity-0 hidden' : 'hidden lg:block text-label-md ml-3'">{{ item.label }}</span>
-            </a>
+        <nav class="flex-1 overflow-y-auto scrollbar-none">
+            <template v-for="(section, si) in navSections" :key="si">
+                <div v-if="section.title" class="overflow-hidden transition-all duration-300" :class="collapsed ? 'w-0 opacity-0 hidden' : 'hidden lg:block px-3 pt-4 pb-1 text-[10px] font-bold uppercase tracking-widest text-outline dark:text-gray-500'">
+                    {{ section.title }}
+                </div>
+                <div :class="si > 0 ? 'mt-0' : ''">
+                    <a
+                        v-for="item in section.items"
+                        :key="item.key"
+                        :href="route(item.route)"
+                        :title="collapsed ? item.label : undefined"
+                        :class="[
+                            'flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 cursor-pointer justify-center lg:justify-start',
+                            activeNav === item.key
+                                ? 'bg-secondary-container dark:bg-green-900 text-on-secondary-container dark:text-green-200 font-bold'
+                                : 'text-on-surface-variant dark:text-gray-300 hover:bg-surface-container-low dark:hover:bg-gray-800'
+                        ]"
+                    >
+                        <span class="material-symbols-outlined">{{ item.icon }}</span>
+                        <span class="overflow-hidden transition-all duration-300" :class="collapsed ? 'w-0 opacity-0 hidden' : 'hidden lg:block text-label-md ml-3'">{{ item.label }}</span>
+                    </a>
+                </div>
+            </template>
         </nav>
     </aside>
 </template>

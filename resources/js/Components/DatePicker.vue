@@ -3,6 +3,8 @@ import { ref, computed, onMounted, onUnmounted } from 'vue';
 
 const model = defineModel<string>({ required: true });
 
+withDefaults(defineProps<{ placeholder?: string }>(), { placeholder: 'Seleccionar fecha' });
+
 const open = ref(false);
 const viewYear = ref(new Date().getFullYear());
 const viewMonth = ref(new Date().getMonth());
@@ -66,7 +68,7 @@ onUnmounted(() => document.removeEventListener('click', onClickOutside));
         <button type="button" @click.stop="open = !open"
             class="w-full flex items-center gap-2 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-body-sm hover:border-primary focus:ring-2 focus:ring-primary outline-none transition-all">
             <span class="material-symbols-outlined text-outline text-[18px]">calendar_today</span>
-            <span>{{ displayValue || 'Seleccionar fecha' }}</span>
+            <span>{{ displayValue || placeholder }}</span>
         </button>
         <div v-if="open" class="absolute top-full mt-1 left-0 z-50 bg-white dark:bg-gray-800 border border-border-subtle dark:border-gray-700 rounded-xl shadow-lg p-4 w-72">
             <div class="flex items-center justify-between mb-3">

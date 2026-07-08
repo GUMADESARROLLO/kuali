@@ -22,7 +22,7 @@ class TicketService
                 'department_id' => $data['department_id'],
                 'category_id' => $data['category_id'],
                 'subcategory_id' => $data['subcategory_id'],
-                'priority' => $data['priority'] ?? 'media',
+                'priority' => $data['priority'] ?? 'baja',
                 'status' => 'abierto',
             ]);
 

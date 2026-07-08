@@ -250,17 +250,9 @@ const initAvatar = (name: string): string => {
                                     rows="1"
                                 />
                             </div>
-                            <div class="px-4">
-                                <FileUploader ref="uploaderRef" v-model="commentForm.attachments" />
-                            </div>
                             <p v-if="commentForm.errors.comment" class="px-4 text-error text-label-sm pb-1">{{ commentForm.errors.comment }}</p>
                             <div class="flex items-center justify-between px-4 pb-3 pt-2 border-t border-border-subtle dark:border-gray-600">
-                                <div class="flex items-center gap-1 text-outline dark:text-gray-400">
-                                    <button type="button" @click="uploaderRef?.openFilePicker()" class="flex items-center gap-1.5 px-3 py-1.5 border border-border-subtle dark:border-gray-500 rounded-lg text-label-sm text-outline dark:text-gray-300 hover:text-deep-navy dark:hover:text-white hover:border-deep-navy dark:hover:border-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-all" title="Adjuntar archivos">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7.586a2 2 0 00-2.828 0l-5.657 5.657a4 4 0 105.657 5.657l5.657-5.657A2 2 0 0015.172 7.586z"/></svg>
-                                        Adjuntar
-                                    </button>
-                                </div>
+                                <FileUploader ref="uploaderRef" v-model="commentForm.attachments" />
                                 <button type="submit" :disabled="commentForm.processing || !commentForm.comment.trim()"
                                     class="w-9 h-9 rounded-xl bg-deep-navy dark:bg-blue-700 text-white flex items-center justify-center hover:bg-primary dark:hover:bg-blue-600 transition-colors disabled:opacity-50">
                                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M3 12l18-8-8 18-2-8-8-2z"/></svg>

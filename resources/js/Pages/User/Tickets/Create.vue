@@ -13,7 +13,6 @@ const form = useForm({
     description: '',
     category_id: null as number | null,
     subcategory_id: null as number | null,
-    priority: 'media',
     attachments: [] as File[],
 });
 
@@ -69,20 +68,6 @@ const submit = () => {
                 />
                 <p v-if="form.errors.category_id" class="text-error text-label-sm mt-1">{{ form.errors.category_id }}</p>
                 <p v-if="form.errors.subcategory_id" class="text-error text-label-sm mt-1">{{ form.errors.subcategory_id }}</p>
-
-                <!-- Priority -->
-                <div class="space-y-2">
-                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-200">Prioridad</label>
-                    <select
-                        v-model="form.priority"
-                        class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                    >
-                        <option value="baja">Baja</option>
-                        <option value="media">Media</option>
-                        <option value="alta">Alta</option>
-                        <option value="urgente">Urgente</option>
-                    </select>
-                </div>
 
                 <!-- Attachments -->
                 <FileUploader v-model="form.attachments" />

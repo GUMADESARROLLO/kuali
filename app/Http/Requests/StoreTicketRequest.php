@@ -18,7 +18,7 @@ class StoreTicketRequest extends FormRequest
             'description' => 'required|string|min:10',
             'category_id' => 'required|exists:categories,id',
             'subcategory_id' => 'required|exists:subcategories,id',
-            'priority' => 'required|in:baja,media,alta,urgente',
+            'priority' => 'sometimes|in:baja,media,alta,urgente',
             'department_id' => 'sometimes|required|exists:departments,id',
             'attachments' => 'sometimes|array|max:5',
             'attachments.*' => 'file|mimes:pdf,png,jpg,jpeg,docx,xlsx,zip|max:10240',
