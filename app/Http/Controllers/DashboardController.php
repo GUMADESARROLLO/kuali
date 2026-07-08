@@ -51,6 +51,14 @@ class DashboardController extends Controller
         return Inertia::render('User/Dashboard', [
             'stats' => $stats,
             'tickets' => $tickets,
+            'filters' => [
+                'search' => $request->search ?? '',
+                'status' => $request->status ?? '',
+                'priority' => $request->priority ?? '',
+                'date_from' => $request->date_from ?? now()->toDateString(),
+                'date_to' => $request->date_to ?? now()->toDateString(),
+                'per_page' => $request->per_page ?? 10,
+            ],
         ]);
     }
 

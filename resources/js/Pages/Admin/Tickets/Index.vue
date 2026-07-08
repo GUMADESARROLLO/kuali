@@ -2,8 +2,11 @@
 import AppLayout from '@/Layouts/AppLayout.vue';
 import TicketTable from '@/Components/TicketTable.vue';
 import PaginationBar from '@/Components/PaginationBar.vue';
+import DatePicker from '@/Components/DatePicker.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
+
+interface Dept { id: number; name: string }
 
 interface Ticket {
     id: number;
@@ -12,6 +15,7 @@ interface Ticket {
     priority: string;
     status: string;
     created_at: string;
+    department?: Dept | null;
     assigned_agent?: { name: string } | null;
 }
 
@@ -25,64 +29,34 @@ interface PaginationMeta {
     last_page: number;
 }
 
+interface Filters { search: string; date_from: string; date_to: string; department_id: string }
+
 const props = defineProps<{
     tickets: PaginationMeta;
-    activeTab: string;
     activePerPage?: number;
-    unassignedCount?: number;
+    departments?: Dept[];
+    filters?: Filters;
 }>();
 
-const currentTab = ref(props.activeTab || 'all');
 const currentPerPage = ref(props.activePerPage || 10);
-const searchQuery = ref('');
-let searchTimer: ReturnType<typeof setTimeout> | null = null;
+const searchQuery = ref(props.filters?.search ?? '');
+const dateFrom = ref(props.filters?.date_from ?? new Date().toISOString().split('T')[0]);
+const dateTo = ref(props.filters?.date_to ?? new Date().toISOString().split('T')[0]);
+const departmentId = ref(props.filters?.department_id ?? '');
 
 const doSearch = () => {
     const params: Record<string, string> = {};
-    if (currentTab.value === 'unassigned') {
-        params.assigned = 'no';
-    } else if (currentTab.value !== 'all') {
-        params.status = currentTab.value;
-    }
-    if (searchQuery.value) {
-        params.search = searchQuery.value;
-    }
-    if (currentPerPage.value !== 10) {
-        params.per_page = String(currentPerPage.value);
-    }
+    if (searchQuery.value) params.search = searchQuery.value;
+    if (dateFrom.value) params.date_from = dateFrom.value;
+    if (dateTo.value) params.date_to = dateTo.value;
+    if (departmentId.value) params.department_id = departmentId.value;
+    if (currentPerPage.value !== 10) params.per_page = String(currentPerPage.value);
     router.get(route('admin.tickets.index'), params, { preserveState: true, preserveScroll: true, replace: true });
-};
-
-const onSearchInput = () => {
-    if (searchTimer) clearTimeout(searchTimer);
-    searchTimer = setTimeout(doSearch, 400);
-};
-
-const tabs = [
-    { key: 'all', label: 'ALL' },
-    { key: 'unassigned', label: 'UNASSIGNED' },
-    { key: 'abierto', label: 'OPEN' },
-    { key: 'en_proceso', label: 'IN PROGRESS' },
-    { key: 'en_espera', label: 'ON-HOLD' },
-    { key: 'resuelto', label: 'RESOLVED' },
-    { key: 'cerrado', label: 'CLOSED' },
-];
-
-const switchTab = (tab: string) => {
-    currentTab.value = tab;
-    searchQuery.value = '';
-    doSearch();
 };
 
 const changePerPage = (e: Event) => {
     currentPerPage.value = Number((e.target as HTMLSelectElement).value);
     doSearch();
-};
-
-const getTabCount = (key: string): number => {
-    if (key === 'all') return props.tickets.total;
-    if (key === 'unassigned') return props.unassignedCount ?? 0;
-    return key === props.activeTab ? props.tickets.data.length : 0;
 };
 </script>
 
@@ -105,53 +79,48 @@ const getTabCount = (key: string): number => {
             </Link>
         </div>
 
-        <div class="bg-white dark:bg-gray-800 rounded-xl border border-border-subtle dark:border-gray-700 shadow-sm overflow-hidden flex flex-col">
-            <div class="flex items-center gap-6 px-6 pt-4 border-b border-border-subtle dark:border-gray-700 overflow-x-auto no-scrollbar">
-                <button
-                    v-for="tab in tabs"
-                    :key="tab.key"
-                    @click="switchTab(tab.key)"
-                    :class="[
-                        'text-label-md pb-4 flex items-center gap-2 whitespace-nowrap transition-colors relative',
-                        currentTab === tab.key ? 'text-primary active-tab' : 'text-outline dark:text-gray-400 hover:text-on-surface-variant dark:hover:text-gray-200'
-                    ]"
-                >
-                    {{ tab.label }}
-                    <span
-                        :class="[
-                            'px-1.5 py-0.5 rounded text-[10px]',
-                            currentTab === tab.key
-                                ? 'bg-primary-container text-on-primary-container'
-                                : 'bg-surface-container-highest dark:bg-gray-600 text-outline dark:text-gray-300'
-                        ]"
-                    >
-                        {{ getTabCount(tab.key) }}
-                    </span>
-                </button>
-            </div>
-
-            <div class="p-4 flex flex-wrap items-center justify-between gap-4 bg-surface-container-lowest dark:bg-gray-800/50">
-                <div class="relative flex-1 max-w-md">
+        <div class="bg-white dark:bg-gray-800 rounded-xl border border-border-subtle dark:border-gray-700 shadow-sm overflow-visible flex flex-col">
+<div class="p-4 flex flex-wrap items-center gap-4 bg-surface-container-lowest dark:bg-gray-800/50">
+                <div class="relative w-full sm:flex-1 sm:min-w-[200px] shrink-0">
                     <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[18px]">search</span>
                     <input
                         v-model="searchQuery"
-                        @input="onSearchInput"
+                        @keydown.enter="doSearch"
                         class="w-full pl-10 pr-4 py-2 border border-border-subtle dark:border-gray-600 rounded-lg text-body-sm bg-white dark:bg-gray-700 dark:text-gray-200 focus:ring-primary focus:border-primary outline-none"
                         placeholder="Search by ticket #, title, or description..."
                     />
                 </div>
-                <div class="flex items-center gap-2">
-                    <span class="text-label-sm text-outline dark:text-gray-400 shrink-0">Show</span>
-                    <select
-                        :value="currentPerPage"
-                        @change="changePerPage"
-                        class="border-border-subtle dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-lg text-label-sm py-1 focus:ring-primary focus:border-primary"
-                    >
-                        <option :value="10">10 / page</option>
-                        <option :value="25">25 / page</option>
-                        <option :value="50">50 / page</option>
-                    </select>
+
+                <div class="flex items-center gap-2 w-full sm:w-auto shrink-0">
+                    <div class="w-full sm:w-36">
+                        <DatePicker v-model="dateFrom" placeholder="Inicio" />
+                    </div>
+                    <span class="text-outline text-label-sm shrink-0">—</span>
+                    <div class="w-full sm:w-36">
+                        <DatePicker v-model="dateTo" placeholder="Termina" />
+                    </div>
                 </div>
+
+                <select v-model="departmentId"
+                    class="w-full sm:w-auto shrink-0 border-border-subtle dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-lg text-label-sm py-2 px-3 focus:ring-primary focus:border-primary outline-none">
+                    <option value="">Todos los deptos</option>
+                    <option v-for="d in departments" :key="d.id" :value="d.id">{{ d.name }}</option>
+                </select>
+
+                <button @click="doSearch"
+                    class="px-4 py-2 bg-deep-navy text-white rounded-lg text-label-sm hover:bg-primary transition-all shrink-0">
+                    Filtrar
+                </button>
+
+                <select
+                    :value="currentPerPage"
+                    @change="changePerPage"
+                    class="w-full sm:w-auto border-border-subtle dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-lg text-label-sm py-2 px-3 focus:ring-primary focus:border-primary outline-none"
+                >
+                    <option :value="10">10 / page</option>
+                    <option :value="25">25 / page</option>
+                    <option :value="50">50 / page</option>
+                </select>
             </div>
 
             <!-- Table -->

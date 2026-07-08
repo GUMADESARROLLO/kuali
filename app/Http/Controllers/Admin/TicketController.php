@@ -40,16 +40,29 @@ class TicketController extends Controller
             $query->whereNull('assigned_to');
         }
 
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
+        if ($request->filled('department_id')) {
+            $query->where('department_id', $request->department_id);
+        }
+
         $perPage = in_array((int) $request->per_page, [10, 25, 50]) ? (int) $request->per_page : 10;
         $tickets = $query->latest()->paginate($perPage);
 
-        $unassignedCount = Ticket::whereNull('assigned_to')->count();
-
         return Inertia::render('Admin/Tickets/Index', [
             'tickets' => $tickets,
-            'activeTab' => $request->assigned === 'no' ? 'unassigned' : ($request->status ?? 'all'),
             'activePerPage' => $perPage,
-            'unassignedCount' => $unassignedCount,
+            'departments' => \App\Models\Department::active()->orderBy('name')->get(['id', 'name']),
+            'filters' => [
+                'search' => $request->search ?? '',
+                'date_from' => $request->date_from ?? now()->toDateString(),
+                'date_to' => $request->date_to ?? now()->toDateString(),
+                'department_id' => $request->department_id ?? '',
+            ],
         ]);
     }
 

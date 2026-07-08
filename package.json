@@ -30,6 +30,8 @@
         "vue-tsc": "^2.0.24"
     },
     "dependencies": {
+        "@vuepic/vue-datepicker": "^14.0.0",
+        "date-fns": "^4.4.0",
         "tailwindcss": "^4.3.2"
     }
 }

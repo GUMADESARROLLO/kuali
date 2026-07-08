@@ -37,19 +37,23 @@ interface PaginationMeta {
     last_page: number;
 }
 
+interface Filters {
+    search: string; status: string; priority: string;
+    date_from: string; date_to: string; per_page: number;
+}
+
 const props = defineProps<{
     stats: Stats;
     tickets: PaginationMeta;
+    filters: Filters;
 }>();
 
-const search = ref('');
-const statusFilter = ref('');
-const priorityFilter = ref('');
-const today = new Date().toISOString().split('T')[0];
-const dateFrom = ref(today);
-const dateTo = ref(today);
-const perPage = ref(10);
-let searchTimer: ReturnType<typeof setTimeout> | null = null;
+const search = ref(props.filters.search);
+const statusFilter = ref(props.filters.status);
+const priorityFilter = ref(props.filters.priority);
+const dateFrom = ref(props.filters.date_from);
+const dateTo = ref(props.filters.date_to);
+const perPage = ref(props.filters.per_page);
 
 const applyFilters = () => {
     const params: Record<string, string> = {};
@@ -62,11 +66,6 @@ const applyFilters = () => {
     router.get(route('user.dashboard'), params, { preserveState: true, preserveScroll: true, replace: true });
 };
 
-const onSearchInput = () => {
-    if (searchTimer) clearTimeout(searchTimer);
-    searchTimer = setTimeout(applyFilters, 400);
-};
-
 const statuses = [
     { value: 'abierto', label: 'Abierto' },
     { value: 'en_proceso', label: 'En Proceso' },
@@ -75,6 +74,20 @@ const statuses = [
     { value: 'cerrado', label: 'Cerrado' },
     { value: 'cancelado', label: 'Cancelado' },
 ];
+
+const formatDate = (dateStr: string): { label: string; full: string } => {
+    const d = new Date(dateStr);
+    const full = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false });
+    const now = new Date();
+    const diff = now.getTime() - d.getTime();
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    let label: string;
+    if (days === 0) label = `Hoy, ${d.toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' })}`;
+    else if (days === 1) label = `Ayer, ${d.toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' })}`;
+    else if (days < 7) label = `Hace ${days} días`;
+    else label = d.toLocaleDateString('es', { day: 'numeric', month: 'short', year: 'numeric' });
+    return { label, full };
+};
 
 const priorities = [
     { value: 'baja', label: 'Baja' },
@@ -121,7 +134,7 @@ const priorities = [
             </div>
         </div>
 
-        <div class="bg-white dark:bg-gray-800 rounded-xl border border-border-subtle dark:border-gray-700 shadow-sm overflow-hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-xl border border-border-subtle dark:border-gray-700 shadow-sm overflow-visible">
             <div class="px-6 py-4 border-b border-border-subtle dark:border-gray-700">
                 <h3 class="text-headline-sm font-semibold text-on-surface dark:text-gray-100">Tickets</h3>
             </div>
@@ -132,23 +145,11 @@ const priorities = [
                     <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[18px]">search</span>
                     <input
                         v-model="search"
-                        @input="onSearchInput"
+                        @keydown.enter="applyFilters"
                         class="w-full pl-10 pr-4 py-2 border border-border-subtle dark:border-gray-600 rounded-lg text-body-sm bg-white dark:bg-gray-700 dark:text-gray-200 focus:ring-primary focus:border-primary outline-none"
                         placeholder="Buscar por # o título..."
                     />
                 </div>
-
-                <select v-model="statusFilter" @change="applyFilters"
-                    class="w-full sm:w-auto shrink-0 border-border-subtle dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-lg text-label-sm py-2 px-3 focus:ring-primary focus:border-primary outline-none">
-                    <option value="">Todos los estados</option>
-                    <option v-for="s in statuses" :key="s.value" :value="s.value">{{ s.label }}</option>
-                </select>
-
-                <select v-model="priorityFilter" @change="applyFilters"
-                    class="w-full sm:w-auto shrink-0 border-border-subtle dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-lg text-label-sm py-2 px-3 focus:ring-primary focus:border-primary outline-none">
-                    <option value="">Todas las prioridades</option>
-                    <option v-for="p in priorities" :key="p.value" :value="p.value">{{ p.label }}</option>
-                </select>
 
                 <div class="flex items-center gap-2 w-full sm:w-auto shrink-0">
                     <div class="w-full sm:w-36">
@@ -159,6 +160,23 @@ const priorities = [
                         <DatePicker v-model="dateTo" placeholder="Termina" />
                     </div>
                 </div>
+
+                <select v-model="statusFilter"
+                    class="w-full sm:w-auto shrink-0 border-border-subtle dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-lg text-label-sm py-2 px-3 focus:ring-primary focus:border-primary outline-none">
+                    <option value="">Todos los estados</option>
+                    <option v-for="s in statuses" :key="s.value" :value="s.value">{{ s.label }}</option>
+                </select>
+
+                <select v-model="priorityFilter"
+                    class="w-full sm:w-auto shrink-0 border-border-subtle dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-lg text-label-sm py-2 px-3 focus:ring-primary focus:border-primary outline-none">
+                    <option value="">Todas las prioridades</option>
+                    <option v-for="p in priorities" :key="p.value" :value="p.value">{{ p.label }}</option>
+                </select>
+
+                <button @click="applyFilters"
+                    class="px-4 py-2 bg-deep-navy text-white rounded-lg text-label-sm hover:bg-primary transition-all shrink-0">
+                    Filtrar
+                </button>
 
                 <select v-model="perPage" @change="applyFilters"
                     class="w-full sm:w-auto shrink-0 border-border-subtle dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-lg text-label-sm py-2 px-3 focus:ring-primary focus:border-primary outline-none">
@@ -172,7 +190,7 @@ const priorities = [
             <div v-if="tickets.data.length === 0" class="p-8 text-center text-outline dark:text-gray-400 text-body-md">
                 Sin tickets.
             </div>
-            <table v-else class="w-full text-left">
+            <table v-else class="w-full text-left min-w-[900px]">
                 <thead>
                     <tr class="bg-surface-container-low dark:bg-gray-700 border-b border-border-subtle dark:border-gray-700">
                         <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider">#</th>
@@ -181,6 +199,7 @@ const priorities = [
                         <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider">Prioridad</th>
                         <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider">Estado</th>
                         <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider">Asignado</th>
+                        <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider">Creado</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-border-subtle dark:divide-gray-700">
@@ -191,6 +210,7 @@ const priorities = [
                         <td class="px-6 py-3"><PriorityBadge :priority="t.priority" /></td>
                         <td class="px-6 py-3"><StatusPill :status="t.status" /></td>
                         <td class="px-6 py-3 text-body-sm text-outline dark:text-gray-400">{{ t.assigned_agent?.name ?? '—' }}</td>
+                        <td class="px-6 py-3 text-body-sm text-outline dark:text-gray-400 whitespace-nowrap" :title="formatDate(t.created_at).full">{{ formatDate(t.created_at).label }}</td>
                     </tr>
                 </tbody>
             </table>

@@ -3,6 +3,8 @@ import StatusPill from '@/Components/StatusPill.vue';
 import PriorityBadge from '@/Components/PriorityBadge.vue';
 import { router } from '@inertiajs/vue3';
 
+interface Dept { id: number; name: string }
+
 interface Ticket {
     id: number;
     ticket_number: string;
@@ -10,6 +12,7 @@ interface Ticket {
     priority: string;
     status: string;
     created_at: string;
+    department?: Dept | null;
     assigned_agent?: { name: string } | null;
 }
 
@@ -46,6 +49,9 @@ const formatDate = (dateStr: string): string => {
                     <th class="py-4 px-6 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider w-24">
                         <div class="flex items-center gap-1">Priority <span class="material-symbols-outlined text-[16px]">swap_vert</span></div>
                     </th>
+                    <th class="py-4 px-6 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider w-32">
+                        <div class="flex items-center gap-1">Department <span class="material-symbols-outlined text-[16px]">swap_vert</span></div>
+                    </th>
                     <th class="py-4 px-6 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider w-36">
                         <div class="flex items-center gap-1">Assignee <span class="material-symbols-outlined text-[16px]">swap_vert</span></div>
                     </th>
@@ -69,6 +75,7 @@ const formatDate = (dateStr: string): string => {
                         <p class="text-[12px] text-outline dark:text-gray-400">Ticket ID: #{{ t.ticket_number }}</p>
                     </td>
                     <td class="py-4 px-6"><PriorityBadge :priority="t.priority" /></td>
+                    <td class="py-4 px-6 text-body-sm text-on-surface-variant dark:text-gray-400">{{ t.department?.name ?? '—' }}</td>
                     <td class="py-4 px-6">
                         <div class="flex items-center gap-2">
                             <div v-if="t.assigned_agent" class="w-7 h-7 rounded-full bg-surface-container dark:bg-gray-700 flex items-center justify-center text-outline dark:text-gray-300 text-xs border border-border-subtle dark:border-gray-600">
@@ -84,7 +91,7 @@ const formatDate = (dateStr: string): string => {
 
                 </tr>
                 <tr v-if="tickets.length === 0">
-                    <td colspan="6" class="py-12 text-center text-outline dark:text-gray-400 text-body-md">No tickets found.</td>
+                    <td colspan="7" class="py-12 text-center text-outline dark:text-gray-400 text-body-md">No tickets found.</td>
                 </tr>
             </tbody>
         </table>

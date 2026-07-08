@@ -27,16 +27,19 @@ const selectedYear = ref(viewYear.value);
 
 const displayValue = computed(() => {
     if (!model.value) return '';
-    const d = new Date(model.value);
-    return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getFullYear()}`;
+    const parts = model.value.split('-');
+    if (parts.length !== 3) return model.value;
+    return `${parts[2]}/${parts[1]}/${parts[0]}`;
 });
 
 const selectDay = (day: number) => {
     selectedDay.value = day;
     selectedMonth.value = viewMonth.value;
     selectedYear.value = viewYear.value;
-    const d = new Date(viewYear.value, viewMonth.value, day);
-    model.value = d.toISOString().split('T')[0];
+    const y = viewYear.value;
+    const m = String(viewMonth.value + 1).padStart(2, '0');
+    const d = String(day).padStart(2, '0');
+    model.value = `${y}-${m}-${d}`;
     open.value = false;
 };
 

@@ -34,8 +34,9 @@ const props = defineProps<{
     to: string | null;
 }>();
 
-const fromDate = ref(props.from ?? '');
-const toDate = ref(props.to ?? '');
+const today = new Date().toISOString().split('T')[0];
+const fromDate = ref(props.from ?? today);
+const toDate = ref(props.to ?? today);
 
 const applyFilters = () => {
     router.get(route('admin.reports.index'), {
@@ -82,9 +83,13 @@ const onHoldOffset = computed(() => donutCircumference - (donutCircumference * o
             </div>
             <div class="flex items-center gap-3">
                 <div class="flex items-center gap-2">
-                    <DatePicker v-model="fromDate" />
-                    <span class="text-outline">—</span>
-                    <DatePicker v-model="toDate" />
+                    <div class="w-36">
+                        <DatePicker v-model="fromDate" placeholder="Inicio" />
+                    </div>
+                    <span class="text-outline text-label-sm">—</span>
+                    <div class="w-36">
+                        <DatePicker v-model="toDate" placeholder="Termina" />
+                    </div>
                 </div>
                 <button @click="applyFilters" class="px-4 py-2 bg-deep-navy text-white rounded-lg text-label-sm hover:shadow-md transition-all">Filtrar</button>
                 <button @click="exportExcel" class="px-4 py-2 border border-border-subtle rounded-lg text-label-sm text-on-surface hover:bg-surface-container-low transition-all flex items-center gap-2">
