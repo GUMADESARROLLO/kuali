@@ -34,6 +34,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/tickets/{ticket}/status', [AdminTicketController::class, 'updateStatus'])
             ->middleware('auth')
             ->name('tickets.status');
+        Route::post('/tickets/{ticket}/priority', [AdminTicketController::class, 'updatePriority'])
+            ->middleware('auth')
+            ->name('tickets.priority');
+        Route::post('/tickets/{ticket}/reclassify', [AdminTicketController::class, 'reclassify'])
+            ->middleware('auth')
+            ->name('tickets.reclassify');
+        Route::post('/tickets/{ticket}/resolve', [AdminTicketController::class, 'resolve'])
+            ->middleware('auth')
+            ->name('tickets.resolve');
 
         Route::get('/departamentos', [DepartmentController::class, 'index'])->name('departments.index');
         Route::get('/departamentos/crear', [DepartmentController::class, 'create'])->name('departments.create');

@@ -11,6 +11,7 @@ use App\Http\Requests\StoreTicketRequest;
 use App\Http\Requests\TicketCommentRequest;
 use App\Models\Category;
 use App\Models\Department;
+use App\Models\Subcategory;
 use App\Models\TicketComment;
 use App\Models\TicketHistory;
 use App\Models\User;
@@ -89,13 +90,15 @@ class TicketController extends Controller
             'comments.attachments',
         ]);
 
-        $ticket->setRelation('comments', $ticket->comments->sortByDesc('created_at')->values());
+        $ticket->setRelation('comments', $ticket->comments->sortBy('created_at')->values());
 
         $agents = User::role(['agente_it', 'admin_it'])->get(['id', 'name']);
+        $categories = Category::active()->get(['id', 'name']);
 
         return Inertia::render('Admin/Tickets/Show', [
             'ticket' => $ticket,
             'agents' => $agents,
+            'categories' => $categories,
         ]);
     }
 
@@ -181,5 +184,85 @@ class TicketController extends Controller
 
         return redirect()->route('admin.tickets.show', $ticket)
             ->with('success', "Estado actualizado a '{$newStatus}'.");
+    }
+
+    public function updatePriority(Request $request, Ticket $ticket)
+    {
+        if (!$request->user()->hasAnyRole(['agente_it', 'admin_it'])) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'priority' => 'required|in:baja,media,alta,urgente',
+        ]);
+
+        $ticket->update(['priority' => $validated['priority']]);
+
+        return redirect()->route('admin.tickets.show', $ticket)
+            ->with('success', "Prioridad actualizada.");
+    }
+
+    public function reclassify(Request $request, Ticket $ticket)
+    {
+        if (!$request->user()->hasAnyRole(['agente_it', 'admin_it'])) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'category_id' => 'required|exists:categories,id',
+            'subcategory_id' => 'required|exists:subcategories,id',
+        ]);
+
+        $old = "{$ticket->category?->name} / {$ticket->subcategory?->name}";
+        $newCat = Category::find($validated['category_id']);
+        $newSub = Subcategory::find($validated['subcategory_id']);
+
+        $ticket->update([
+            'category_id' => $validated['category_id'],
+            'subcategory_id' => $validated['subcategory_id'],
+        ]);
+
+        TicketHistory::create([
+            'ticket_id' => $ticket->id,
+            'user_id' => $request->user()->id,
+            'action' => TicketHistory::ACTION_RECLASSIFIED,
+            'description' => "Reclasificado de '{$old}' a '{$newCat?->name} / {$newSub?->name}'",
+        ]);
+
+        return redirect()->route('admin.tickets.show', $ticket)
+            ->with('success', 'Ticket reclasificado.');
+    }
+
+    public function resolve(TicketCommentRequest $request, Ticket $ticket, TicketService $service)
+    {
+        if (!$request->user()->hasAnyRole(['agente_it', 'admin_it'])) {
+            abort(403);
+        }
+
+        $comment = TicketComment::create([
+            'ticket_id' => $ticket->id,
+            'user_id' => $request->user()->id,
+            'comment' => $request->comment ?: 'Ticket resuelto.',
+            'is_internal' => false,
+        ]);
+
+        foreach ($request->file('attachments', []) as $file) {
+            $service->uploadAttachment($ticket, $file, $request->user()->id, $comment->id);
+        }
+
+        TicketHistory::create([
+            'ticket_id' => $ticket->id,
+            'user_id' => $request->user()->id,
+            'action' => TicketHistory::ACTION_RESOLVED,
+            'description' => 'Ticket resuelto por ' . $request->user()->name . ': ' . $request->comment,
+        ]);
+
+        $ticket->update([
+            'status' => 'resuelto',
+            'resolved_at' => now(),
+        ]);
+
+        return redirect()->route('admin.tickets.show', $ticket)
+            ->with('success', 'Ticket resuelto.');
     }
 }

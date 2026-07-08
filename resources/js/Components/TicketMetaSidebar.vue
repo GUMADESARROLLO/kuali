@@ -1,45 +1,104 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { Link, router, usePage } from '@inertiajs/vue3';
-import PriorityBadge from '@/Components/PriorityBadge.vue';
-import StatusPill from '@/Components/StatusPill.vue';
+import FormSelect from '@/Components/FormSelect.vue';
+import axios from 'axios';
 
+interface CatItem { id: number; name: string }
 interface TicketUser { id: number; name: string; email: string }
 interface Agent { id: number; name: string }
 interface Ticket {
     id: number; ticket_number: string; title: string; status: string; priority: string;
     created_at: string; resolved_at: string | null; closed_at: string | null;
     user: TicketUser; department: { name: string } | null;
-    category: { name: string } | null; subcategory: { name: string } | null;
+    category: CatItem | null; subcategory: CatItem | null;
     assigned_agent: TicketUser | null;
 }
 
-const props = defineProps<{ ticket: Ticket; agents: Agent[] }>();
+const props = defineProps<{ ticket: Ticket; agents: Agent[]; categories?: CatItem[] }>();
+
+const selCategory = ref<string | number>(props.ticket.category?.id ?? '');
+const selSubcategory = ref<string | number>(props.ticket.subcategory?.id ?? '');
+const subcatOptions = ref<CatItem[]>([]);
+const loadingSub = ref(false);
+
+if (props.ticket.category?.id) {
+    axios.get(`/api/subcategorias/${props.ticket.category.id}`).then(({ data }) => {
+        subcatOptions.value = data;
+    }).catch(() => {});
+}
+
+watch(selCategory, async (catId) => {
+    selSubcategory.value = '';
+    subcatOptions.value = [];
+    if (!catId) return;
+    loadingSub.value = true;
+    try {
+        const { data } = await axios.get(`/api/subcategorias/${catId}`);
+        subcatOptions.value = data;
+    } catch { subcatOptions.value = []; }
+    loadingSub.value = false;
+});
+
+const categoryOptions = computed(() => (props.categories ?? []).map(c => ({ value: c.id, label: c.name })));
+const subcategoryOptions = computed(() => subcatOptions.value.map(s => ({ value: s.id, label: s.name })));
+
+let reclassifyTimer: ReturnType<typeof setTimeout> | null = null;
+watch([selCategory, selSubcategory], ([cat, sub]) => {
+    if (!cat || !sub) return;
+    if (cat == props.ticket.category?.id && sub == props.ticket.subcategory?.id) return;
+    if (reclassifyTimer) clearTimeout(reclassifyTimer);
+    reclassifyTimer = setTimeout(() => {
+        router.post(route('admin.tickets.reclassify', { ticket: props.ticket.id }), {
+            category_id: cat, subcategory_id: sub,
+        }, { preserveScroll: true, preserveState: false });
+    }, 600);
+});
 
 const auth = usePage().props.auth as any;
 const userRoles = (auth?.roles ?? []) as string[];
 const isAgent = userRoles.includes('agente_it') || userRoles.includes('admin_it');
 
-const showAssign = ref(false);
-const selectedAgent = ref<number | null>(null);
+const assignAgent = ref(props.ticket.assigned_agent?.id ?? '');
 
-const changeStatus = (e: Event) => {
-    const status = (e.target as HTMLSelectElement).value;
-    router.post(route('admin.tickets.status', { ticket: props.ticket.id }), { status }, {
-        preserveScroll: true, preserveState: false,
-    });
+watch(assignAgent, (newVal) => {
+    if (newVal && newVal !== props.ticket.assigned_agent?.id) {
+        router.post(route('admin.tickets.assign', { ticket: props.ticket.id }), {
+            assigned_to: newVal,
+        }, { preserveScroll: true, preserveState: false });
+    }
+});
+
+const agentOptions = computed(() => props.agents.map(a => ({
+    value: a.id,
+    label: a.name,
+    prefix: a.name.charAt(0).toUpperCase(),
+})));
+
+const statusOptions = [
+    { value: 'abierto', label: 'Abierto' },
+    { value: 'en_proceso', label: 'En Proceso' },
+    { value: 'en_espera', label: 'En Espera' },
+    { value: 'resuelto', label: 'Resuelto' },
+    { value: 'cerrado', label: 'Cerrado' },
+    { value: 'cancelado', label: 'Cancelado' },
+];
+
+const changeStatus = (val: string | number) => {
+    router.post(route('admin.tickets.status', { ticket: props.ticket.id }), {
+        status: val,
+    }, { preserveScroll: true, preserveState: false });
 };
 
-const assign = () => {
-    if (!selectedAgent.value) return;
-    router.post(route('admin.tickets.assign', { ticket: props.ticket.id }), {
-        assigned_to: selectedAgent.value,
-    }, { preserveScroll: true, onSuccess: () => { showAssign.value = false; selectedAgent.value = null; } });
+const changePriority = (p: string) => {
+    router.post(route('admin.tickets.priority', { ticket: props.ticket.id }), {
+        priority: p,
+    }, { preserveScroll: true, preserveState: false });
 };
 
 const formatDate = (d: string): string => {
     const dt = new Date(d);
-    return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 };
 
 const timeAgo = (d: string): string => {
@@ -50,105 +109,131 @@ const timeAgo = (d: string): string => {
     if (hrs < 24) return hrs + ' hours ago';
     return Math.floor(hrs / 24) + ' days ago';
 };
+
+const initAvatar = (name: string): string => {
+    return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+};
 </script>
 
 <template>
-    <aside class="w-80 h-full bg-white dark:bg-gray-800 border-l border-border-subtle dark:border-gray-700 overflow-y-auto p-6 hidden xl:block shrink-0">
-        <h3 class="text-headline-sm text-deep-navy dark:text-blue-300 mb-6">Ticket Details</h3>
-        <div class="space-y-6">
-            <div class="grid grid-cols-2 gap-4">
-                <div class="space-y-2">
-                    <p class="text-[10px] uppercase font-bold text-outline dark:text-gray-400 tracking-widest">Status</p>
-                    <StatusPill :status="ticket.status" />
-                    <select v-if="isAgent"
-                        :value="ticket.status"
-                        @change="changeStatus"
-                        class="w-full mt-2 px-3 py-2 border border-border-subtle dark:border-gray-600 rounded-lg text-label-sm bg-white dark:bg-gray-700 text-on-surface dark:text-gray-200 focus:ring-primary outline-none cursor-pointer"
-                    >
-                        <option value="abierto">Abierto</option>
-                        <option value="en_proceso">En Proceso</option>
-                        <option value="en_espera">En Espera</option>
-                        <option value="resuelto">Resuelto</option>
-                        <option value="cerrado">Cerrado</option>
-                        <option value="cancelado">Cancelado</option>
-                    </select>
-                </div>
-                <div class="space-y-2">
-                    <p class="text-[10px] uppercase font-bold text-outline dark:text-gray-400 tracking-widest">Priority</p>
-                    <PriorityBadge :priority="ticket.priority" />
-                </div>
+    <aside class="w-[320px] h-full bg-white dark:bg-gray-800 border-l border-border-subtle dark:border-gray-700 overflow-y-auto hidden xl:block shrink-0">
+        <div class="px-5 py-5">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-base font-semibold text-on-surface dark:text-gray-100">Ticket details</h3>
             </div>
-            <div class="h-px bg-border-subtle dark:bg-gray-700" />
 
-            <div class="space-y-3">
-                <p class="text-[10px] uppercase font-bold text-outline dark:text-gray-400 tracking-widest">Assigned to</p>
-                <div v-if="ticket.assigned_agent" class="flex items-center gap-3 p-2 rounded-lg bg-surface-container-low dark:bg-gray-700 border border-border-subtle dark:border-gray-600">
-                    <div class="w-9 h-9 rounded-full bg-surface-container dark:bg-gray-600 flex items-center justify-center text-outline dark:text-gray-300 shrink-0 border border-border-subtle dark:border-gray-500">
-                        <span class="material-symbols-outlined text-[18px]">support_agent</span>
-                    </div>
-                    <div>
-                        <p class="text-label-md text-deep-navy dark:text-blue-300">{{ ticket.assigned_agent.name }}</p>
-                        <p class="text-label-sm text-outline dark:text-gray-400">IT Support</p>
-                    </div>
+            <!-- Assign -->
+            <div class="mb-5">
+                <label class="text-xs font-medium text-outline dark:text-gray-400 mb-1.5 block">Assigne</label>
+                <div v-if="isAgent">
+                    <FormSelect v-model="assignAgent" :options="agentOptions" placeholder="Sin asignar">
+                        <template #prefix>
+                            <div v-if="ticket.assigned_agent" class="w-6 h-6 rounded-full bg-deep-navy text-white text-[9px] font-bold flex items-center justify-center shrink-0">
+                                {{ initAvatar(ticket.assigned_agent.name) }}
+                            </div>
+                            <div v-else class="w-6 h-6 rounded-full bg-surface-container text-outline flex items-center justify-center shrink-0">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                            </div>
+                        </template>
+                    </FormSelect>
                 </div>
-                <div v-else class="text-label-sm text-outline dark:text-gray-400 italic p-2">Unassigned</div>
-                <div v-if="!showAssign">
-                    <button @click="showAssign = true" class="w-full py-2 border border-dashed border-primary/30 rounded-lg text-label-sm text-primary hover:bg-primary-fixed/30 dark:hover:bg-blue-900/40 transition-colors">{{ ticket.assigned_agent ? 'Reassign' : 'Assign' }} Ticket</button>
-                </div>
-                <div v-else class="space-y-2">
-                    <select v-model="selectedAgent" class="w-full px-3 py-2 border border-border-subtle dark:border-gray-600 rounded-lg text-label-sm bg-white dark:bg-gray-700 text-on-surface dark:text-gray-200">
-                        <option :value="null" disabled>Select agent...</option>
-                        <option v-for="a in agents" :key="a.id" :value="a.id">{{ a.name }}</option>
-                    </select>
-                    <div class="flex gap-2">
-                        <button @click="assign" :disabled="!selectedAgent" class="flex-1 py-1.5 bg-deep-navy text-white rounded-lg text-label-sm disabled:opacity-50">Assign</button>
-                        <button @click="showAssign = false; selectedAgent = null" class="py-1.5 px-3 border border-border-subtle rounded-lg text-label-sm text-outline">Cancel</button>
+                <div v-else class="flex items-center gap-2 border border-border-subtle dark:border-gray-600 rounded-xl px-3 py-2.5">
+                    <div v-if="ticket.assigned_agent" class="w-6 h-6 rounded-full bg-deep-navy dark:bg-blue-700 text-white text-[9px] font-bold flex items-center justify-center shrink-0">
+                        {{ initAvatar(ticket.assigned_agent.name) }}
                     </div>
+                    <span class="text-sm text-on-surface dark:text-gray-100">{{ ticket.assigned_agent?.name ?? 'Sin asignar' }}</span>
                 </div>
             </div>
 
-            <div class="space-y-3">
-                <p class="text-[10px] uppercase font-bold text-outline dark:text-gray-400 tracking-widest">Requester</p>
-                <div class="flex items-center gap-3 p-2 rounded-lg bg-surface-container-low dark:bg-gray-700 border border-border-subtle dark:border-gray-600">
-                    <div class="w-9 h-9 rounded-full bg-surface-container dark:bg-gray-600 flex items-center justify-center text-outline dark:text-gray-300 shrink-0 border border-border-subtle dark:border-gray-500">
-                        <span class="material-symbols-outlined text-[18px]">person</span>
+            <!-- Team / Department -->
+            <div class="mb-5">
+                <label class="text-xs font-medium text-outline dark:text-gray-400 mb-1.5 block">Departamento</label>
+                <div class="flex items-center border border-border-subtle dark:border-gray-600 rounded-xl px-3 py-2.5">
+                    <span class="text-sm text-on-surface dark:text-gray-100 flex-1">{{ ticket.department?.name ?? '—' }}</span>
+                </div>
+            </div>
+
+            <!-- Set status -->
+            <div class="mb-5">
+                <label class="text-xs font-medium text-outline dark:text-gray-400 mb-1.5 block">Set status</label>
+                <div v-if="isAgent">
+                    <FormSelect :model-value="ticket.status" :options="statusOptions" @update:model-value="changeStatus">
+                        <template #prefix>
+                            <svg class="w-4 h-4 text-primary shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M5 3v18M5 4h11l-2 4 2 4H5"/></svg>
+                        </template>
+                    </FormSelect>
+                </div>
+                <div v-else class="flex items-center border border-border-subtle dark:border-gray-600 rounded-xl px-3 py-2.5">
+                    <span class="text-sm text-on-surface dark:text-gray-100 flex-1">{{ ticket.status }}</span>
+                </div>
+            </div>
+
+            <!-- Set priority -->
+            <div class="mb-5">
+                <label class="text-xs font-medium text-outline dark:text-gray-400 mb-1.5 block">Set priority</label>
+                <div class="flex gap-2">
+                    <button @click="changePriority('baja')"
+                        class="flex-1 flex items-center justify-center gap-1.5 text-sm border rounded-xl py-2 transition-all"
+                        :class="ticket.priority === 'baja' ? 'border-deep-navy dark:border-blue-500 bg-deep-navy/5 dark:bg-blue-500/10 font-medium text-on-surface dark:text-gray-100' : 'border-border-subtle dark:border-gray-600 text-outline dark:text-gray-300 hover:bg-surface-container-low dark:hover:bg-gray-700'">
+                        <span class="w-2 h-2 rounded-full bg-green-500"></span>Low
+                    </button>
+                    <button @click="changePriority('media')"
+                        class="flex-1 flex items-center justify-center gap-1.5 text-sm border rounded-xl py-2 transition-all"
+                        :class="ticket.priority === 'media' ? 'border-deep-navy dark:border-blue-500 bg-deep-navy/5 dark:bg-blue-500/10 font-medium text-on-surface dark:text-gray-100' : 'border-border-subtle dark:border-gray-600 text-outline dark:text-gray-300 hover:bg-surface-container-low dark:hover:bg-gray-700'">
+                        <span class="w-2 h-2 rounded-full bg-amber-400"></span>Medium
+                    </button>
+                    <button @click="changePriority('alta')"
+                        class="flex-1 flex items-center justify-center gap-1.5 text-sm border rounded-xl py-2 transition-all"
+                        :class="ticket.priority === 'alta' || ticket.priority === 'urgente' ? 'border-deep-navy dark:border-blue-500 bg-deep-navy/5 dark:bg-blue-500/10 font-medium text-on-surface dark:text-gray-100' : 'border-border-subtle dark:border-gray-600 text-outline dark:text-gray-300 hover:bg-surface-container-low dark:hover:bg-gray-700'">
+                        <span class="w-2 h-2 rounded-full bg-red-500"></span>High
+                    </button>
+                </div>
+            </div>
+
+            <!-- Attributes -->
+            <div class="mb-5">
+                <h4 class="text-sm font-semibold text-on-surface dark:text-gray-100 mb-3">Atributos</h4>
+                <dl class="space-y-3">
+                    <div v-if="isAgent" class="mb-4 space-y-3">
+                        <div>
+                            <label class="text-xs font-medium text-outline dark:text-gray-400 mb-1.5 block">Categor&iacute;a</label>
+                            <FormSelect v-model="selCategory" :options="categoryOptions" placeholder="Seleccionar categor&iacute;a" />
+                        </div>
+                        <div>
+                            <label class="text-xs font-medium text-outline dark:text-gray-400 mb-1.5 block">Subcategor&iacute;a</label>
+                            <FormSelect v-model="selSubcategory" :options="subcategoryOptions" placeholder="Primero selecciona categor&iacute;a" :disabled="!selCategory || loadingSub" />
+                        </div>
                     </div>
-                    <div>
-                        <p class="text-label-md text-deep-navy dark:text-blue-300">{{ ticket.user?.name }}</p>
-                        <p class="text-label-sm text-outline dark:text-gray-400">{{ ticket.department?.name ?? '' }}</p>
+                    <template v-else>
+                        <div class="flex items-center justify-between">
+                            <dt class="text-sm text-outline dark:text-gray-400">Categor&iacute;a</dt>
+                            <dd class="text-sm font-medium text-on-surface dark:text-gray-100">{{ ticket.category?.name ?? '—' }}</dd>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <dt class="text-sm text-outline dark:text-gray-400">Subcategor&iacute;a</dt>
+                            <dd class="text-sm font-medium text-on-surface dark:text-gray-100">{{ ticket.subcategory?.name ?? '—' }}</dd>
+                        </div>
+                    </template>
+                    <div class="flex items-center justify-between">
+                        <dt class="text-sm text-outline dark:text-gray-400">Creado</dt>
+                        <dd class="text-sm font-medium text-on-surface dark:text-gray-100">{{ formatDate(ticket.created_at) }}</dd>
                     </div>
-                </div>
+                    <div v-if="ticket.resolved_at" class="flex items-center justify-between">
+                        <dt class="text-sm text-outline dark:text-gray-400">Resuelto</dt>
+                        <dd class="text-sm font-medium text-on-surface dark:text-gray-100">{{ formatDate(ticket.resolved_at) }}</dd>
+                    </div>
+                    <div v-if="ticket.closed_at" class="flex items-center justify-between">
+                        <dt class="text-sm text-outline dark:text-gray-400">Cerrado</dt>
+                        <dd class="text-sm font-medium text-on-surface dark:text-gray-100">{{ formatDate(ticket.closed_at) }}</dd>
+                    </div>
+                </dl>
             </div>
 
-            <div v-if="ticket.category" class="space-y-2">
-                <p class="text-[10px] uppercase font-bold text-outline dark:text-gray-400 tracking-widest">Category</p>
-                <p class="text-label-md text-on-surface dark:text-gray-200">{{ ticket.category.name }} / {{ ticket.subcategory?.name }}</p>
-            </div>
-            <div class="h-px bg-border-subtle dark:bg-gray-700" />
-
-            <div class="space-y-4">
-                <div class="flex justify-between items-center">
-                    <span class="text-label-sm text-outline dark:text-gray-400">Created</span>
-                    <span class="text-label-sm text-on-surface dark:text-gray-200">{{ formatDate(ticket.created_at) }}</span>
-                </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-label-sm text-outline dark:text-gray-400">Last Activity</span>
-                    <span class="text-label-sm text-on-surface dark:text-gray-200">{{ timeAgo(ticket.created_at) }}</span>
-                </div>
-                <div v-if="ticket.resolved_at" class="flex justify-between items-center">
-                    <span class="text-label-sm text-outline dark:text-gray-400">Resolved</span>
-                    <span class="text-label-sm text-on-surface dark:text-gray-200">{{ formatDate(ticket.resolved_at) }}</span>
-                </div>
-                <div v-if="ticket.closed_at" class="flex justify-between items-center">
-                    <span class="text-label-sm text-outline dark:text-gray-400">Closed</span>
-                    <span class="text-label-sm text-on-surface dark:text-gray-200">{{ formatDate(ticket.closed_at) }}</span>
-                </div>
-            </div>
-
+            <!-- Back link -->
             <div class="pt-2">
-                <Link :href="route('admin.tickets.index')" class="flex items-center gap-2 text-label-sm text-primary dark:text-blue-300 hover:underline">
-                    <span class="material-symbols-outlined text-[16px]">arrow_back</span>
-                    Back to Tickets
+                <Link :href="route('admin.tickets.index')" class="flex items-center gap-2 text-label-sm text-primary dark:text-blue-400 hover:underline">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                    Volver a Tickets
                 </Link>
             </div>
         </div>

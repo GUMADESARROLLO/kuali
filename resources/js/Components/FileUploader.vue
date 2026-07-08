@@ -67,7 +67,11 @@ const removeFile = (index: number) => {
 <template>
     <input ref="fileInput" type="file" multiple :accept="ALLOWED.join(',')" class="hidden" @change="onFileChange" />
     <p v-if="error" class="text-error text-label-sm mb-2">{{ error }}</p>
-    <div v-if="fileList.length" class="flex flex-wrap gap-2 mb-2">
+    <button type="button" @click="openFilePicker" class="flex items-center gap-1.5 px-3 py-1.5 border border-border-subtle dark:border-gray-500 rounded-lg text-label-sm text-outline dark:text-gray-300 hover:text-deep-navy dark:hover:text-white hover:border-deep-navy dark:hover:border-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-all">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7.586a2 2 0 00-2.828 0l-5.657 5.657a4 4 0 105.657 5.657l5.657-5.657A2 2 0 0015.172 7.586z"/></svg>
+        Adjuntar archivos
+    </button>
+    <div v-if="fileList.length" class="flex flex-wrap gap-2 mt-2">
         <div
             v-for="(f, i) in fileList"
             :key="i"
