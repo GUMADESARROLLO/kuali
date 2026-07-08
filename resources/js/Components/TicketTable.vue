@@ -40,9 +40,6 @@ const formatDate = (dateStr: string): string => {
         <table class="w-full text-left border-collapse min-w-[750px]">
             <thead>
                 <tr class="bg-surface-container-low dark:bg-gray-700 border-b border-border-subtle dark:border-gray-700">
-                    <th class="py-4 px-6 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider w-12">
-                        <input class="rounded border-outline-variant dark:border-gray-500 text-primary focus:ring-primary" type="checkbox"/>
-                    </th>
                     <th class="py-4 px-6 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider">
                         <div class="flex items-center gap-1">Subject <span class="material-symbols-outlined text-[16px]">swap_vert</span></div>
                     </th>
@@ -69,7 +66,6 @@ const formatDate = (dateStr: string): string => {
                     :key="t.id"
                     class="hover:bg-surface-container-lowest dark:hover:bg-gray-700/50 transition-colors group"
                 >
-                    <td class="py-4 px-6"><input class="rounded border-outline-variant dark:border-gray-500 text-primary focus:ring-primary" type="checkbox"/></td>
                     <td class="py-4 px-6 cursor-pointer" @click="viewTicket(t)">
                         <div class="text-body-md text-on-surface dark:text-gray-100 group-hover:text-primary transition-colors">{{ t.title }}</div>
                         <p class="text-[12px] text-outline dark:text-gray-400">Ticket ID: #{{ t.ticket_number }}</p>
@@ -91,7 +87,7 @@ const formatDate = (dateStr: string): string => {
 
                 </tr>
                 <tr v-if="tickets.length === 0">
-                    <td colspan="7" class="py-12 text-center text-outline dark:text-gray-400 text-body-md">No tickets found.</td>
+                    <td colspan="6" class="py-12 text-center text-outline dark:text-gray-400 text-body-md">No tickets found.</td>
                 </tr>
             </tbody>
         </table>

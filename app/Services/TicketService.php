@@ -2,11 +2,13 @@
 
 namespace App\Services;
 
+use App\Mail\TicketNotification;
 use App\Models\Ticket;
 use App\Models\TicketAttachment;
 use App\Models\TicketHistory;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 
 class TicketService
@@ -37,6 +39,12 @@ class TicketService
             // Upload attachments
             foreach ($files as $file) {
                 $this->uploadAttachment($ticket, $file, $data['user_id']);
+            }
+
+            try {
+                Mail::to($ticket->user->email)->send(new TicketNotification($ticket, 'created'));
+            } catch (\Throwable $e) {
+                report($e);
             }
 
             return $ticket->load([

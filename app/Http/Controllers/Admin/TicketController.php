@@ -9,6 +9,7 @@ use Inertia\Inertia;
 
 use App\Http\Requests\StoreTicketRequest;
 use App\Http\Requests\TicketCommentRequest;
+use App\Mail\TicketNotification;
 use App\Models\Category;
 use App\Models\Department;
 use App\Models\Subcategory;
@@ -16,6 +17,7 @@ use App\Models\TicketComment;
 use App\Models\TicketHistory;
 use App\Models\User;
 use App\Services\TicketService;
+use Illuminate\Support\Facades\Mail;
 
 class TicketController extends Controller
 {
@@ -161,6 +163,15 @@ class TicketController extends Controller
             $service->uploadAttachment($ticket, $file, $request->user()->id, $comment->id);
         }
 
+        try {
+            $ticket->load('user');
+            if ($ticket->user) {
+                Mail::to($ticket->user->email)->send(new TicketNotification($ticket, 'commented', $comment));
+            }
+        } catch (\Throwable $e) {
+            report($e);
+        }
+
         return redirect()->route('admin.tickets.show', $ticket)->with('success', 'Comentario agregado.');
     }
 
@@ -274,6 +285,15 @@ class TicketController extends Controller
             'status' => 'resuelto',
             'resolved_at' => now(),
         ]);
+
+        try {
+            $ticket->load('user');
+            if ($ticket->user) {
+                Mail::to($ticket->user->email)->send(new TicketNotification($ticket, 'resolved', $comment));
+            }
+        } catch (\Throwable $e) {
+            report($e);
+        }
 
         return redirect()->route('admin.tickets.show', $ticket)
             ->with('success', 'Ticket resuelto.');
