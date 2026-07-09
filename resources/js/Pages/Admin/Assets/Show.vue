@@ -12,7 +12,7 @@ interface AssetDetail {
     notes: string | null;
     company: { id: number; name: string } | null;
     category: { id: number; name: string } | null;
-    assigned_person: { id: number; first_name: string; last_name: string; email: string | null } | null;
+    assigned_person: { id: number; first_name: string; last_name: string; email: string | null; company: { name: string } | null; department: { name: string } | null } | null;
     parent: { id: number; asset_tag: string; name: string } | null;
     children: ChildAsset[];
     maintenance: MaintRecord[];
@@ -149,7 +149,11 @@ const statusClass = (s: string) => ({ 'bg-green-100 text-green-700': s === 'disp
                     <h3 class="text-label-sm font-semibold text-outline uppercase tracking-wider mb-3">Asignado a</h3>
                     <div v-if="asset.assigned_person" class="mb-3">
                         <p class="text-body-sm font-semibold text-on-surface dark:text-gray-100">{{ asset.assigned_person.first_name }} {{ asset.assigned_person.last_name }}</p>
-                        <p class="text-body-sm text-outline">{{ asset.assigned_person.email || '' }}</p>
+                        <p v-if="asset.assigned_person.email" class="text-body-sm text-outline">{{ asset.assigned_person.email }}</p>
+                        <div v-if="asset.assigned_person.company || asset.assigned_person.department" class="mt-2 pt-2 border-t border-border-subtle dark:border-gray-600">
+                            <p v-if="asset.assigned_person.company" class="text-label-sm text-outline">{{ asset.assigned_person.company.name }}</p>
+                            <p v-if="asset.assigned_person.department" class="text-label-sm text-outline">{{ asset.assigned_person.department.name }}</p>
+                        </div>
                     </div>
                     <p v-else class="text-body-sm text-outline mb-3 italic">Sin asignar</p>
                     <button @click="personId = asset.assigned_person?.id ?? ''; showAssignModal = true" class="w-full px-3 py-2 bg-deep-navy text-white rounded-lg text-label-sm hover:bg-primary transition-all">{{ asset.assigned_person ? 'Reasignar' : 'Asignar' }}</button>

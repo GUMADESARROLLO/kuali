@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Exports\TicketsExport;
 use App\Http\Controllers\Controller;
+use App\Models\Asset;
 use App\Models\Department;
+use App\Models\Person;
 use App\Models\Ticket;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -75,5 +77,76 @@ class ReportController extends Controller
 
         $filename = "reporte_{$type}_" . now()->format('Ymd') . '.xlsx';
         return Excel::download(new TicketsExport($type, $from, $to), $filename);
+    }
+
+    public function assetsByPerson(Request $request)
+    {
+        $person = null;
+        $assets = collect();
+        $stats = null;
+
+        if ($request->filled('person_id')) {
+            $person = Person::with(['company', 'department'])
+                ->find($request->person_id);
+
+            if ($person) {
+                $assets = Asset::with(['category', 'parent'])
+                    ->where('person_id', $person->id)
+                    ->orderBy('asset_tag')
+                    ->get()
+                    ->map(function ($asset) {
+                        $assignedDate = $asset->assigned_at;
+                        $purchaseDate = $asset->purchase_date;
+                        return [
+                            'id' => $asset->id,
+                            'asset_tag' => $asset->asset_tag,
+                            'name' => $asset->name,
+                            'brand' => $asset->brand,
+                            'model' => $asset->model,
+                            'serial_number' => $asset->serial_number,
+                            'status' => $asset->status,
+                            'category_name' => $asset->category?->name,
+                            'assigned_date' => $assignedDate ? $assignedDate->format('d M Y') : ($purchaseDate ? $purchaseDate->format('d M Y') : null),
+                        ];
+                    });
+
+                $stats = [
+                    'total' => $assets->count(),
+                    'active' => $assets->where('status', 'asignado')->count(),
+                    'maintenance' => $assets->where('status', 'en_reparacion')->count(),
+                ];
+            }
+        }
+
+        $people = Person::with(['company', 'department'])
+            ->where('is_active', true)
+            ->orderBy('last_name')->orderBy('first_name')
+            ->get()
+            ->map(fn($p) => [
+                'id' => $p->id,
+                'first_name' => $p->first_name,
+                'last_name' => $p->last_name,
+                'email' => $p->email,
+                'company_name' => $p->company?->name,
+                'department_name' => $p->department?->name,
+            ]);
+
+        // Also pass departments for display
+        $departments = Department::with('company')->get()->keyBy('id');
+        $companies = \App\Models\Company::all()->keyBy('id');
+
+        return Inertia::render('Admin/Reports/AssetsByPerson', [
+            'people' => $people,
+            'person' => $person ? [
+                'id' => $person->id,
+                'first_name' => $person->first_name,
+                'last_name' => $person->last_name,
+                'email' => $person->email,
+                'company_name' => $person->company?->name,
+                'department_name' => $person->department?->name,
+            ] : null,
+            'assets' => $assets,
+            'stats' => $stats,
+        ]);
     }
 }

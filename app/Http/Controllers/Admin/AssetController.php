@@ -40,7 +40,7 @@ class AssetController extends Controller
     public function show(Asset $asset)
     {
         $asset->load([
-            'company', 'category', 'assignedPerson', 'parent', 'children',
+            'company', 'category', 'assignedPerson.company', 'assignedPerson.department', 'parent', 'children',
             'children.category', 'children.assignedPerson',
             'maintenance' => fn($q) => $q->latest('performed_at'),
             'softwareLicenses',
@@ -140,7 +140,7 @@ class AssetController extends Controller
             'person_id' => 'nullable|exists:people,id',
         ]);
 
-        $asset->update(['person_id' => $validated['person_id'], 'status' => $validated['person_id'] ? 'asignado' : 'disponible']);
+        $asset->update(['person_id' => $validated['person_id'], 'assigned_at' => $validated['person_id'] ? now() : null, 'status' => $validated['person_id'] ? 'asignado' : 'disponible']);
 
         foreach ($asset->children as $child) {
             $child->update(['person_id' => $validated['person_id'], 'status' => $validated['person_id'] ? 'asignado' : 'disponible']);

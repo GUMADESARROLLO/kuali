@@ -32,7 +32,7 @@ class UserController extends Controller
 
         return Inertia::render('Admin/Users/Index', [
             'users' => $users,
-            'departments' => Department::active()->orderBy('name')->get(['id', 'name']),
+            'departments' => Department::with('company')->active()->orderBy('company_id')->orderBy('name')->get(['id', 'name', 'company_id']),
             'roles' => Role::all()->pluck('name'),
         ]);
     }
@@ -40,7 +40,7 @@ class UserController extends Controller
     public function create()
     {
         return Inertia::render('Admin/Users/Form', [
-            'departments' => Department::active()->orderBy('name')->get(['id', 'name']),
+            'departments' => Department::with('company')->active()->orderBy('company_id')->orderBy('name')->get(['id', 'name', 'company_id']),
             'roles' => Role::all()->pluck('name'),
         ]);
     }
@@ -85,7 +85,7 @@ class UserController extends Controller
                 'is_active' => $user->is_active,
                 'role' => $user->getRoleNames()->first(),
             ],
-            'departments' => Department::active()->orderBy('name')->get(['id', 'name']),
+            'departments' => Department::with('company')->active()->orderBy('company_id')->orderBy('name')->get(['id', 'name', 'company_id']),
             'roles' => Role::all()->pluck('name'),
         ]);
     }

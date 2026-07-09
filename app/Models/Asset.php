@@ -11,7 +11,7 @@ class Asset extends Model
 {
     protected $fillable = [
         'asset_tag', 'name', 'company_id', 'asset_category_id', 'parent_asset_id',
-        'brand', 'model', 'serial_number', 'status', 'person_id', 'location',
+        'brand', 'model', 'serial_number', 'status', 'person_id', 'assigned_at', 'location',
         'purchase_date', 'purchase_cost', 'warranty_expiry', 'notes',
     ];
 
@@ -20,6 +20,7 @@ class Asset extends Model
         return [
             'purchase_date' => 'date',
             'warranty_expiry' => 'date',
+            'assigned_at' => 'datetime',
             'purchase_cost' => 'decimal:2',
         ];
     }

@@ -42,6 +42,7 @@ class AssetSeeder extends Seeder
             'serial_number' => 'SN-UNI-001',
             'status' => 'asignado',
             'person_id' => $people[0]->id ?? null,
+            'assigned_at' => Carbon::now(),
             'location' => 'Oficina Gerencia - Piso 2',
             'purchase_date' => '2025-03-15',
             'purchase_cost' => 2800.00,
@@ -59,6 +60,7 @@ class AssetSeeder extends Seeder
             'serial_number' => 'SN-MON-UNI-001',
             'status' => 'asignado',
             'person_id' => $people[0]->id ?? null,
+            'assigned_at' => Carbon::now(),
         ]);
 
         Asset::create([
@@ -71,6 +73,7 @@ class AssetSeeder extends Seeder
             'model' => 'K120',
             'status' => 'asignado',
             'person_id' => $people[0]->id ?? null,
+            'assigned_at' => Carbon::now(),
         ]);
 
         Asset::create([
@@ -83,6 +86,7 @@ class AssetSeeder extends Seeder
             'model' => 'B100',
             'status' => 'asignado',
             'person_id' => $people[0]->id ?? null,
+            'assigned_at' => Carbon::now(),
         ]);
 
         // Laptop
@@ -96,6 +100,7 @@ class AssetSeeder extends Seeder
             'serial_number' => 'SN-LAP-UNI-001',
             'status' => 'asignado',
             'person_id' => $people[0]->id ?? null,
+            'assigned_at' => Carbon::now(),
             'location' => 'Oficina Contabilidad - Piso 1',
             'purchase_date' => '2025-06-01',
             'purchase_cost' => 4200.00,
@@ -113,6 +118,7 @@ class AssetSeeder extends Seeder
             'serial_number' => 'SN-TEL-UNI-001',
             'status' => 'asignado',
             'person_id' => $people[0]->id ?? null,
+            'assigned_at' => Carbon::now(),
             'location' => 'Recepción - Piso 1',
             'purchase_date' => '2025-01-10',
             'purchase_cost' => 350.00,
@@ -204,4 +210,6 @@ class AssetSeeder extends Seeder
         $office->assets()->attach($lap1->id, ['installed_at' => '2025-06-05 14:00:00']);
     }
 }
+
+
 

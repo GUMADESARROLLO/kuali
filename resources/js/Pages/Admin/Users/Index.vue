@@ -3,7 +3,7 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
-interface Dept { id: number; name: string }
+interface Dept { id: number; name: string; company?: { id: number; name: string } | null }
 interface UserRow {
     id: number;
     name: string;
@@ -153,7 +153,7 @@ const roleLabel = (role: string | null): string => {
                                 <select v-model="editingUser.department_id"
                                     class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                                     <option :value="null">Sin departamento</option>
-                                    <option v-for="d in departments" :key="d.id" :value="d.id">{{ d.name }}</option>
+                                    <option v-for="d in departments" :key="d.id" :value="d.id">{{ d.company?.name ?? '?' }} - {{ d.name }}</option>
                                 </select>
                             </div>
                             <div class="space-y-2">

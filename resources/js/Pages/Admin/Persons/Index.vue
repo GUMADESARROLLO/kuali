@@ -83,7 +83,6 @@ const applyFilters = () => {
                         <th class="px-6 py-3 text-label-sm uppercase text-outline font-bold tracking-wider">Tel&eacute;fono</th>
                         <th class="px-6 py-3 text-label-sm uppercase text-outline font-bold tracking-wider">Empresa</th>
                         <th class="px-6 py-3 text-label-sm uppercase text-outline font-bold tracking-wider">Departamento</th>
-                        <th class="px-6 py-3 text-label-sm uppercase text-outline font-bold tracking-wider">Activo</th>
                         <th class="px-6 py-3 text-label-sm uppercase text-outline font-bold tracking-wider text-center">Acciones</th>
                     </tr>
                 </thead>
@@ -94,7 +93,6 @@ const applyFilters = () => {
                         <td class="px-6 py-3 text-body-sm text-outline">{{ p.phone || '—' }}</td>
                         <td class="px-6 py-3 text-body-sm text-outline">{{ p.company?.name ?? '—' }}</td>
                         <td class="px-6 py-3 text-body-sm text-outline">{{ p.department?.name ?? '—' }}</td>
-                        <td class="px-6 py-3"><span class="px-2 py-0.5 rounded text-[11px] font-bold" :class="p.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'">{{ p.is_active ? 'Sí' : 'No' }}</span></td>
                         <td class="px-6 py-3">
                             <div class="flex items-center justify-center gap-2">
                                 <button @click="openEdit(p)" class="p-1.5 text-on-surface-variant hover:text-deep-navy hover:bg-surface-container rounded" title="Editar"><span class="material-symbols-outlined text-[18px]">edit</span></button>

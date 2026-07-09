@@ -10,10 +10,21 @@ use Inertia\Inertia;
 
 class DepartmentController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $query = Department::with('company');
+
+        if ($request->filled('search')) {
+            $s = $request->search;
+            $query->where(function ($q) use ($s) {
+                $q->where('name', 'like', "%{$s}%")
+                  ->orWhere('slug', 'like', "%{$s}%")
+                  ->orWhere('description', 'like', "%{$s}%");
+            });
+        }
+
         return Inertia::render('Admin/Departments/Index', [
-            'departments' => Department::with('company')->orderBy('name')->get(),
+            'departments' => $query->orderBy('name')->paginate(20),
             'companies' => \App\Models\Company::active()->orderBy('name')->get(['id', 'name']),
         ]);
     }

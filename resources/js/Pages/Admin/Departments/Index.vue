@@ -6,8 +6,17 @@ import Swal from 'sweetalert2';
 
 interface Co { id: number; name: string }
 interface DeptRow { id: number; name: string; slug: string; description: string | null; is_active: boolean; company: Co | null }
+interface PagMeta { data: DeptRow[]; links: { url: string | null; label: string; active: boolean }[]; from: number; to: number; total: number }
 
-const props = defineProps<{ departments: DeptRow[]; companies: Co[] }>();
+const props = defineProps<{ departments: PagMeta; companies: Co[] }>();
+
+const search = ref('');
+
+const applySearch = () => {
+    const params: Record<string, string> = {};
+    if (search.value) params.search = search.value;
+    router.get(route('admin.departments.index'), params, { preserveState: true, preserveScroll: true, replace: true });
+};
 
 const showModal = ref(false);
 const isEditing = ref(false);
@@ -71,26 +80,27 @@ const toggleActive = (d: DeptRow) => {
         </div>
 
         <div class="bg-white dark:bg-gray-800 rounded-xl border border-border-subtle dark:border-gray-700 shadow-sm overflow-hidden">
+            <div class="p-4 flex items-center gap-3 bg-surface-container-lowest dark:bg-gray-800/50 border-b border-border-subtle dark:border-gray-700">
+                <div class="relative w-56 shrink-0">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[18px]">search</span>
+                    <input v-model="search" @keydown.enter="applySearch" class="w-full pl-10 pr-4 py-2 border border-border-subtle dark:border-gray-600 rounded-lg text-body-sm bg-white dark:bg-gray-700 dark:text-gray-200" placeholder="Buscar departamento..." />
+                </div>
+                <button @click="applySearch" class="px-4 py-2 bg-deep-navy text-white rounded-lg text-label-sm hover:bg-primary shrink-0">Buscar</button>
+            </div>
             <table class="w-full text-left">
                 <thead>
                     <tr class="bg-surface-container-low dark:bg-gray-700 border-b border-border-subtle dark:border-gray-700">
                         <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider">Empresa</th>
                         <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider">Nombre</th>
                         <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider">Slug</th>
-                        <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider">Activo</th>
                         <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider text-center">Acciones</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-border-subtle dark:divide-gray-700">
-                    <tr v-for="d in departments" :key="d.id" class="hover:bg-surface-container-lowest dark:hover:bg-gray-700/50">
+                    <tr v-for="d in departments.data" :key="d.id" class="hover:bg-surface-container-lowest dark:hover:bg-gray-700/50">
                         <td class="px-6 py-3 text-body-sm text-outline dark:text-gray-400">{{ d.company?.name ?? '—' }}</td>
                         <td class="px-6 py-3 text-body-sm text-on-surface dark:text-gray-100 font-semibold">{{ d.name }}</td>
                         <td class="px-6 py-3 text-body-sm text-outline dark:text-gray-400 font-mono">{{ d.slug }}</td>
-                        <td class="px-6 py-3">
-                            <button @click="toggleActive(d)" class="px-2 py-0.5 rounded text-[11px] font-bold" :class="d.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'">
-                                {{ d.is_active ? 'Sí' : 'No' }}
-                            </button>
-                        </td>
                         <td class="px-6 py-3">
                             <div class="flex items-center justify-center gap-2">
                                 <button @click="openEdit(d)" class="p-1.5 text-on-surface-variant dark:text-gray-300 hover:text-deep-navy dark:hover:text-blue-300 hover:bg-surface-container dark:hover:bg-gray-700 rounded transition-all" title="Editar">
@@ -104,6 +114,12 @@ const toggleActive = (d: DeptRow) => {
                     </tr>
                 </tbody>
             </table>
+            <div class="p-4 flex items-center justify-between border-t border-border-subtle dark:border-gray-700">
+                <p class="text-body-sm text-outline dark:text-gray-400">{{ departments.from }}–{{ departments.to }} de {{ departments.total }}</p>
+                <div class="flex items-center gap-2">
+                    <button v-for="l in departments.links" :key="l.label" @click="l.url && router.visit(l.url, { preserveState: true, preserveScroll: true })" :disabled="!l.url || l.active" class="min-w-9 h-9 flex items-center justify-center rounded-lg text-label-sm" :class="l.active ? 'bg-deep-navy text-white font-bold' : l.url ? 'border border-border-subtle dark:border-gray-600 text-outline dark:text-gray-300 hover:bg-surface-container-low dark:hover:bg-gray-700' : 'text-outline/30 dark:text-gray-600 cursor-not-allowed'" v-html="l.label" />
+                </div>
+            </div>
         </div>
 
         <!-- Modal -->

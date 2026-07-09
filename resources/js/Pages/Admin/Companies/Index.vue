@@ -45,7 +45,6 @@ const destroy = async (id: number, name: string) => {
                     <tr class="bg-surface-container-low dark:bg-gray-700 border-b border-border-subtle dark:border-gray-700">
                         <th class="px-6 py-3 text-label-sm uppercase text-outline font-bold tracking-wider">Nombre</th>
                         <th class="px-6 py-3 text-label-sm uppercase text-outline font-bold tracking-wider">Slug</th>
-                        <th class="px-6 py-3 text-label-sm uppercase text-outline font-bold tracking-wider">Activo</th>
                         <th class="px-6 py-3 text-label-sm uppercase text-outline font-bold tracking-wider text-center">Acciones</th>
                     </tr>
                 </thead>
@@ -53,7 +52,6 @@ const destroy = async (id: number, name: string) => {
                     <tr v-for="c in companies" :key="c.id" class="hover:bg-surface-container-lowest dark:hover:bg-gray-700/50">
                         <td class="px-6 py-3 text-body-sm text-on-surface dark:text-gray-100 font-semibold">{{ c.name }}</td>
                         <td class="px-6 py-3 text-body-sm text-outline dark:text-gray-400 font-mono">{{ c.slug }}</td>
-                        <td class="px-6 py-3"><span class="px-2 py-0.5 rounded text-[11px] font-bold" :class="c.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'">{{ c.is_active ? 'Sí' : 'No' }}</span></td>
                         <td class="px-6 py-3">
                             <div class="flex items-center justify-center gap-2">
                                 <button @click="openEdit(c)" class="p-1.5 text-on-surface-variant dark:text-gray-300 hover:text-deep-navy dark:hover:text-blue-300 hover:bg-surface-container dark:hover:bg-gray-700 rounded" title="Editar"><span class="material-symbols-outlined text-[18px]">edit</span></button>

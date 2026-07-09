@@ -35,6 +35,7 @@ const navSections = computed<NavSection[]>(() => {
                     { key: 'dashboard', label: 'Dashboard', icon: 'dashboard', route: 'admin.dashboard' },
                     { key: 'tickets', label: 'All Tickets', icon: 'confirmation_number', route: 'admin.tickets.index' },
                     { key: 'reports', label: 'Reportes', icon: 'monitoring', route: 'admin.reports.index' },
+                    { key: 'person-report', label: 'Activos por persona', icon: 'person_check', route: 'admin.reports.assets-by-person' },
                 ],
             },
             {
