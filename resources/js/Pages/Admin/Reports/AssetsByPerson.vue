@@ -90,10 +90,11 @@ const catIcon = (cat: string | null): string => {
                 <h2 class="text-display-lg text-deep-navy dark:text-blue-300 mb-1">Activos por Persona</h2>
                 <p class="text-body-md text-outline dark:text-gray-400">Reporte individual de equipos asignados.</p>
             </div>
-            <button v-if="person" onclick="window.print()" class="flex items-center gap-2 px-4 py-2 border border-border-subtle dark:border-gray-600 rounded-lg text-label-sm text-outline hover:text-on-surface bg-white dark:bg-gray-800 transition-colors">
-                <span class="material-symbols-outlined text-[16px]">print</span>
-                Imprimir / PDF
-            </button>
+            <a v-if="person" :href="route('admin.reports.assets-by-person.pdf', { person_id: person.id })"
+                class="flex items-center gap-2 px-4 py-2 border border-border-subtle dark:border-gray-600 rounded-lg text-label-sm text-outline hover:text-on-surface bg-white dark:bg-gray-800 transition-colors">
+                <span class="material-symbols-outlined text-[16px]">download</span>
+                Descargar PDF
+            </a>
         </div>
 
         <!-- Person selector -->

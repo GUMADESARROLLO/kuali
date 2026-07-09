@@ -11,6 +11,7 @@ use App\Models\Ticket;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ReportController extends Controller
@@ -148,5 +149,31 @@ class ReportController extends Controller
             'assets' => $assets,
             'stats' => $stats,
         ]);
+    }
+
+    public function exportAssetsPdf(Request $request)
+    {
+        if (!$request->filled('person_id')) abort(404);
+
+        $person = Person::with(['company', 'department'])->findOrFail($request->person_id);
+
+        $assets = Asset::with('category')
+            ->where('person_id', $person->id)
+            ->orderBy('asset_tag')
+            ->get();
+
+        $stats = [
+            'total' => $assets->count(),
+            'active' => $assets->where('status', 'asignado')->count(),
+            'maintenance' => $assets->where('status', 'en_reparacion')->count(),
+        ];
+
+        $folio = 'RA-' . now()->format('Y-dm');
+        $today = now()->translatedFormat('d M Y');
+
+        $pdf = Pdf::loadView('reports.assets-by-person-pdf', compact('person', 'assets', 'stats', 'folio', 'today'));
+        $pdf->setPaper('A4', 'portrait');
+
+        return $pdf->download("activos-{$person->last_name}-{$person->first_name}.pdf");
     }
 }

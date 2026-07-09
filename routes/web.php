@@ -81,6 +81,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/reportes', [ReportController::class, 'index'])->name('reports.index');
         Route::get('/reportes/exportar', [ReportController::class, 'export'])->name('reports.export');
         Route::get('/reportes/activos-por-persona', [ReportController::class, 'assetsByPerson'])->name('reports.assets-by-person');
+        Route::get('/reportes/activos-por-persona/pdf', [ReportController::class, 'exportAssetsPdf'])->name('reports.assets-by-person.pdf');
 
         Route::get('/calendarios', [CalendarController::class, 'index'])->name('calendars.index');
         Route::post('/calendarios', [CalendarController::class, 'store'])->name('calendars.store');
