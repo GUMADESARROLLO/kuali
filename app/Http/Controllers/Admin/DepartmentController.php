@@ -13,13 +13,16 @@ class DepartmentController extends Controller
     public function index()
     {
         return Inertia::render('Admin/Departments/Index', [
-            'departments' => Department::orderBy('name')->get(),
+            'departments' => Department::with('company')->orderBy('name')->get(),
+            'companies' => \App\Models\Company::active()->orderBy('name')->get(['id', 'name']),
         ]);
     }
 
     public function create()
     {
-        return Inertia::render('Admin/Departments/Form');
+        return Inertia::render('Admin/Departments/Form', [
+            'companies' => \App\Models\Company::active()->orderBy('name')->get(['id', 'name']),
+        ]);
     }
 
     public function edit(Department $department)
@@ -32,7 +35,8 @@ class DepartmentController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:departments,name',
+            'company_id' => 'nullable|exists:companies,id',
+            'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:500',
             'is_active' => 'boolean',
         ]);
@@ -46,7 +50,8 @@ class DepartmentController extends Controller
     public function update(Request $request, Department $department)
     {
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255', Rule::unique('departments', 'name')->ignore($department->id)],
+            'company_id' => 'nullable|exists:companies,id',
+            'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:500',
             'is_active' => 'boolean',
         ]);

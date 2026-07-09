@@ -106,8 +106,8 @@ const saveCat = () => {
     }
 };
 
-const destroyCategory = (id: number, name: string) => {
-    if (!confirm(`¿Eliminar la categoría "${name}"?`)) return;
+const destroyCategory = async (id: number, name: string) => {
+    if (!await (window as any).confirmDialog('Eliminar', `¿Eliminar la categoría "${name}"?`)) return;
     router.delete(route('admin.categories.destroy', id));
 };
 
@@ -145,8 +145,8 @@ const saveSub = () => {
     }
 };
 
-const destroySub = (id: number, name: string) => {
-    if (!confirm(`¿Eliminar la subcategoría "${name}"?`)) return;
+const destroySub = async (id: number, name: string) => {
+    if (!await (window as any).confirmDialog('Eliminar', `¿Eliminar la subcategoría "${name}"?`)) return;
     router.delete(route('admin.subcategories.destroy', id));
 };
 </script>

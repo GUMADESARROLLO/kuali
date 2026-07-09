@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Company;
 use App\Models\Department;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -11,21 +12,19 @@ class DepartmentUsersSeeder extends Seeder
 {
     public function run(): void
     {
+        $firstCompany = Company::first();
+        if (!$firstCompany) return;
+
         $depts = [
-            [
-                'slug' => 'contabilidad',
-                'email' => 'contabilidad@kuali.test',
-                'name' => 'Representante Contabilidad',
-            ],
-            [
-                'slug' => 'atencion-al-cliente-sac',
-                'email' => 'sac@kuali.test',
-                'name' => 'Representante SAC',
-            ],
+            ['slug_suffix' => 'contabilidad', 'email' => 'contabilidad@kuali.test', 'name' => 'Representante Contabilidad'],
+            ['slug_suffix' => 'atencion-al-cliente-sac', 'email' => 'sac@kuali.test', 'name' => 'Representante SAC'],
         ];
 
         foreach ($depts as $d) {
-            $dept = Department::where('slug', $d['slug'])->first();
+            $dept = Department::where('company_id', $firstCompany->id)
+                ->where('slug', $firstCompany->slug . '-' . $d['slug_suffix'])
+                ->first();
+
             $user = User::updateOrCreate(
                 ['email' => $d['email']],
                 [

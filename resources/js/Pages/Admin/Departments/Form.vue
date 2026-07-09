@@ -2,10 +2,13 @@
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 
-const props = defineProps<{ department?: { id: number; name: string; description: string | null; is_active: boolean } }>();
+interface DeptOpt { id: number; name: string }
+
+const props = defineProps<{ department?: { id: number; company_id: number | null; name: string; description: string | null; is_active: boolean }; companies?: DeptOpt[] }>();
 
 const isEditing = !!props.department;
 const form = useForm({
+    company_id: props.department?.company_id ?? null,
     name: props.department?.name ?? '',
     description: props.department?.description ?? '',
     is_active: props.department?.is_active ?? true,
@@ -30,6 +33,14 @@ const submit = () => {
             </div>
 
             <form @submit.prevent="submit" class="bg-white dark:bg-gray-800 rounded-xl border border-border-subtle dark:border-gray-700 shadow-sm p-8 space-y-6">
+                <div v-if="companies" class="space-y-2">
+                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-200">Empresa</label>
+                    <select v-model="form.company_id" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
+                        <option :value="null">Seleccionar empresa</option>
+                        <option v-for="c in companies" :key="c.id" :value="c.id">{{ c.name }}</option>
+                    </select>
+                    <p v-if="form.errors.company_id" class="text-error text-label-sm">{{ form.errors.company_id }}</p>
+                </div>
                 <div class="space-y-2">
                     <label class="block text-sm font-semibold text-gray-700 dark:text-gray-200">Nombre</label>
                     <input v-model="form.name" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" />

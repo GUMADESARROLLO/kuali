@@ -34,22 +34,27 @@ const navSections = computed<NavSection[]>(() => {
                 items: [
                     { key: 'dashboard', label: 'Dashboard', icon: 'dashboard', route: 'admin.dashboard' },
                     { key: 'tickets', label: 'All Tickets', icon: 'confirmation_number', route: 'admin.tickets.index' },
+                    { key: 'reports', label: 'Reportes', icon: 'monitoring', route: 'admin.reports.index' },
                 ],
             },
             {
                 title: 'Configuración',
                 items: [
                     { key: 'users', label: 'Usuarios', icon: 'group', route: 'admin.users.index' },
-                    { key: 'departments', label: 'Departamentos', icon: 'business', route: 'admin.departments.index' },
                     { key: 'categories', label: 'Categorías', icon: 'category', route: 'admin.categories.index' },
                     { key: 'calendars', label: 'Calendarios', icon: 'calendar_month', route: 'admin.calendars.index' },
                     { key: 'sla', label: 'Reglas SLA', icon: 'timer', route: 'admin.sla-rules.index' },
                 ],
             },
             {
-                title: undefined,
+                title: 'Inventario',
                 items: [
-                    { key: 'reports', label: 'Reportes', icon: 'monitoring', route: 'admin.reports.index' },
+                    { key: 'companies', label: 'Empresas', icon: 'business', route: 'admin.companies.index' },
+                    { key: 'departments', label: 'Departamentos', icon: 'business', route: 'admin.departments.index' },
+                    { key: 'persons', label: 'Personas', icon: 'person', route: 'admin.persons.index' },
+                    { key: 'assets', label: 'Activos', icon: 'devices', route: 'admin.assets.index' },
+                    { key: 'maintenance', label: 'Mantenimiento', icon: 'build', route: 'admin.maintenance.index' },
+                    { key: 'licenses', label: 'Licencias', icon: 'verified', route: 'admin.licenses.index' },
                 ],
             },
         ];

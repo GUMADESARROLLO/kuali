@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Company;
 use App\Models\Department;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
@@ -10,27 +11,31 @@ class DepartmentSeeder extends Seeder
 {
     public function run(): void
     {
-        $departments = [
-            ['name' => 'Recursos Humanos', 'description' => 'Gestion de personal y nomina'],
-            ['name' => 'Contabilidad', 'description' => 'Finanzas, cuentas por pagar y cobrar'],
-            ['name' => 'Ventas', 'description' => 'Fuerza comercial y atencion a clientes'],
-            ['name' => 'Marketing', 'description' => 'Comunicacion y publicidad'],
-            ['name' => 'Operaciones', 'description' => 'Logistica y cadena de suministro'],
-            ['name' => 'Legal', 'description' => 'Asuntos juridicos y contractuales'],
-            ['name' => 'Administracion', 'description' => 'Servicios generales y mantenimiento'],
-            ['name' => 'Tecnologia', 'description' => 'Desarrollo y operaciones de TI'],
-            ['name' => 'Atencion al Cliente (SAC)', 'description' => 'Servicio de atencion al cliente y soporte comercial'],
+        $deptNames = [
+            'Recursos Humanos',
+            'Contabilidad',
+            'Ventas',
+            'Marketing',
+            'Operaciones',
+            'Legal',
+            'Administracion',
+            'Tecnologia',
+            'Atencion al Cliente (SAC)',
         ];
 
-        foreach ($departments as $row) {
-            Department::updateOrCreate(
-                ['slug' => Str::slug($row['name'])],
-                [
-                    'name' => $row['name'],
-                    'description' => $row['description'],
-                    'is_active' => true,
-                ],
-            );
+        $companies = Company::all();
+
+        foreach ($companies as $company) {
+            foreach ($deptNames as $name) {
+                Department::updateOrCreate(
+                    ['company_id' => $company->id, 'slug' => Str::slug($company->name . '-' . $name)],
+                    [
+                        'name' => $name,
+                        'description' => 'Departamento de ' . $name . ' - ' . $company->name,
+                        'is_active' => true,
+                    ],
+                );
+            }
         }
     }
 }

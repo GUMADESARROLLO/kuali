@@ -60,8 +60,8 @@ const save = () => {
     }
 };
 
-const destroy = (id: number) => {
-    if (!confirm('¿Eliminar este usuario?')) return;
+const destroy = async (id: number) => {
+    if (!await (window as any).confirmDialog('Eliminar', '¿Eliminar este usuario?')) return;
     router.delete(route('admin.users.destroy', id));
 };
 

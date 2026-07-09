@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Company;
 use App\Models\Department;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -11,15 +12,18 @@ class AdminUserSeeder extends Seeder
 {
     public function run(): void
     {
-        $itDepartment = Department::where('slug', 'tecnologia')->first()
-            ?? Department::first();
+        $firstCompany = Company::first();
+        if (!$firstCompany) return;
+
+        $itDept = Department::where('company_id', $firstCompany->id)->where('slug', $firstCompany->slug . '-tecnologia')->first()
+            ?? Department::where('company_id', $firstCompany->id)->first();
 
         $admin = User::updateOrCreate(
             ['email' => 'admin@kuali.test'],
             [
                 'name' => 'Admin IT',
                 'password' => Hash::make('password'),
-                'department_id' => $itDepartment?->id,
+                'department_id' => $itDept?->id,
                 'phone' => '+10000000000',
                 'is_active' => true,
                 'email_verified_at' => now(),
@@ -32,7 +36,7 @@ class AdminUserSeeder extends Seeder
             [
                 'name' => 'Agente IT',
                 'password' => Hash::make('password'),
-                'department_id' => $itDepartment?->id,
+                'department_id' => $itDept?->id,
                 'phone' => '+10000000001',
                 'is_active' => true,
                 'email_verified_at' => now(),
@@ -40,12 +44,13 @@ class AdminUserSeeder extends Seeder
         );
         $agent->syncRoles(['agente_it']);
 
+        $rhDept = Department::where('company_id', $firstCompany->id)->where('slug', $firstCompany->slug . '-recursos-humanos')->first();
         $user = User::updateOrCreate(
             ['email' => 'usuario@kuali.test'],
             [
                 'name' => 'Representante RRHH',
                 'password' => Hash::make('password'),
-                'department_id' => Department::where('slug', 'recursos-humanos')->first()?->id,
+                'department_id' => $rhDept?->id ?? $itDept?->id,
                 'phone' => '+10000000002',
                 'is_active' => true,
                 'email_verified_at' => now(),

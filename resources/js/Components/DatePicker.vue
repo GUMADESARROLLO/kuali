@@ -6,8 +6,10 @@ const model = defineModel<string>({ required: true });
 withDefaults(defineProps<{ placeholder?: string }>(), { placeholder: 'Seleccionar fecha' });
 
 const open = ref(false);
-const viewYear = ref(new Date().getFullYear());
-const viewMonth = ref(new Date().getMonth());
+const today = new Date();
+const datePart = model.value ? model.value.substring(0, 10).split('-') : [];
+const viewYear = ref(datePart.length === 3 ? Number(datePart[0]) : today.getFullYear());
+const viewMonth = ref(datePart.length === 3 ? Number(datePart[1]) - 1 : today.getMonth());
 
 const months = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
@@ -27,7 +29,8 @@ const selectedYear = ref(viewYear.value);
 
 const displayValue = computed(() => {
     if (!model.value) return '';
-    const parts = model.value.split('-');
+    const datePart = model.value.substring(0, 10);
+    const parts = datePart.split('-');
     if (parts.length !== 3) return model.value;
     return `${parts[2]}/${parts[1]}/${parts[0]}`;
 });

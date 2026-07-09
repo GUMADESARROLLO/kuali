@@ -14,10 +14,12 @@ class TicketSeeder extends Seeder
 {
     public function run(): void
     {
+        $firstCompany = \App\Models\Company::first();
+        $companySlug = $firstCompany ? $firstCompany->slug : '';
         $departments = Department::whereIn('slug', [
-            'recursos-humanos',
-            'contabilidad',
-            'atencion-al-cliente-sac',
+            $companySlug . '-recursos-humanos',
+            $companySlug . '-contabilidad',
+            $companySlug . '-atencion-al-cliente-sac',
         ])->get()->keyBy('slug');
 
         $users = User::whereIn('email', [
@@ -31,9 +33,9 @@ class TicketSeeder extends Seeder
         $subcategories = Subcategory::with('category')->get();
 
         $ticketCounts = [
-            'recursos-humanos' => 27,
-            'contabilidad' => 77,
-            'atencion-al-cliente-sac' => 29,
+            $companySlug . '-recursos-humanos' => 27,
+            $companySlug . '-contabilidad' => 77,
+            $companySlug . '-atencion-al-cliente-sac' => 29,
         ];
 
         $statuses = [
@@ -75,9 +77,9 @@ class TicketSeeder extends Seeder
         foreach ($ticketCounts as $deptSlug => $count) {
             $dept = $departments->get($deptSlug);
             $deptUser = match ($deptSlug) {
-                'recursos-humanos' => $users->get('usuario@kuali.test'),
-                'contabilidad' => $users->get('contabilidad@kuali.test'),
-                'atencion-al-cliente-sac' => $users->get('sac@kuali.test'),
+                $companySlug . '-recursos-humanos' => $users->get('usuario@kuali.test'),
+                $companySlug . '-contabilidad' => $users->get('contabilidad@kuali.test'),
+                $companySlug . '-atencion-al-cliente-sac' => $users->get('sac@kuali.test'),
             };
 
             if (!$dept || !$deptUser) continue;

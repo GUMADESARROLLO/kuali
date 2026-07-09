@@ -12,6 +12,7 @@ class Department extends Model
     use HasFactory;
 
     protected $fillable = [
+        'company_id',
         'name',
         'slug',
         'description',
@@ -29,6 +30,11 @@ class Department extends Model
                 $department->slug = Str::slug($department->name);
             }
         });
+    }
+
+    public function company(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Company::class);
     }
 
     public function users(): HasMany

@@ -39,8 +39,8 @@ const save = () => {
     }
 };
 
-const destroy = (id: number, name: string) => {
-    if (!confirm(`¿Eliminar calendario "${name}"?`)) return;
+const destroy = async (id: number, name: string) => {
+    if (!await (window as any).confirmDialog('Eliminar', `¿Eliminar calendario "${name}"?`)) return;
     router.delete(route('admin.calendars.destroy', id));
 };
 </script>

@@ -35,8 +35,8 @@ const save = () => {
     }
 };
 
-const destroy = (id: number, name: string) => {
-    if (!confirm(`¿Eliminar regla SLA "${name}"?`)) return;
+const destroy = async (id: number, name: string) => {
+    if (!await (window as any).confirmDialog('Eliminar', `¿Eliminar regla SLA "${name}"?`)) return;
     router.delete(route('admin.sla-rules.destroy', id));
 };
 </script>

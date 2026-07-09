@@ -1,10 +1,15 @@
 <?php
 
+use App\Http\Controllers\Admin\AssetController;
+use App\Http\Controllers\Admin\AssetMaintenanceController;
 use App\Http\Controllers\Admin\CalendarController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
+use App\Http\Controllers\Admin\CompanyController;
 use App\Http\Controllers\Admin\DepartmentController;
+use App\Http\Controllers\Admin\PersonController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\SlaRuleController;
+use App\Http\Controllers\Admin\SoftwareLicenseController;
 use App\Http\Controllers\Admin\TicketController as AdminTicketController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Api\SubcategoryController;
@@ -85,6 +90,37 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/sla', [SlaRuleController::class, 'store'])->name('sla-rules.store');
         Route::put('/sla/{slaRule}', [SlaRuleController::class, 'update'])->name('sla-rules.update');
         Route::delete('/sla/{slaRule}', [SlaRuleController::class, 'destroy'])->name('sla-rules.destroy');
+
+        // Inventario
+        Route::get('/empresas', [CompanyController::class, 'index'])->name('companies.index');
+        Route::post('/empresas', [CompanyController::class, 'store'])->name('companies.store');
+        Route::put('/empresas/{company}', [CompanyController::class, 'update'])->name('companies.update');
+        Route::delete('/empresas/{company}', [CompanyController::class, 'destroy'])->name('companies.destroy');
+
+        Route::get('/activos', [AssetController::class, 'index'])->name('assets.index');
+        Route::get('/activos/crear', [AssetController::class, 'create'])->name('assets.create');
+        Route::post('/activos', [AssetController::class, 'store'])->name('assets.store');
+        Route::get('/activos/{asset}', [AssetController::class, 'show'])->name('assets.show');
+        Route::get('/activos/{asset}/editar', [AssetController::class, 'edit'])->name('assets.edit');
+        Route::put('/activos/{asset}', [AssetController::class, 'update'])->name('assets.update');
+        Route::delete('/activos/{asset}', [AssetController::class, 'destroy'])->name('assets.destroy');
+        Route::post('/activos/{asset}/asignar', [AssetController::class, 'assign'])->name('assets.assign');
+
+        Route::get('/mantenimiento', [AssetMaintenanceController::class, 'index'])->name('maintenance.index');
+        Route::post('/mantenimiento', [AssetMaintenanceController::class, 'store'])->name('maintenance.store');
+        Route::put('/mantenimiento/{asset_maintenance}', [AssetMaintenanceController::class, 'update'])->name('maintenance.update');
+        Route::delete('/mantenimiento/{asset_maintenance}', [AssetMaintenanceController::class, 'destroy'])->name('maintenance.destroy');
+
+        Route::get('/licencias', [SoftwareLicenseController::class, 'index'])->name('licenses.index');
+        Route::post('/licencias', [SoftwareLicenseController::class, 'store'])->name('licenses.store');
+        Route::put('/licencias/{software_license}', [SoftwareLicenseController::class, 'update'])->name('licenses.update');
+        Route::delete('/licencias/{software_license}', [SoftwareLicenseController::class, 'destroy'])->name('licenses.destroy');
+        Route::post('/licencias/{software_license}/asignar', [SoftwareLicenseController::class, 'assign'])->name('licenses.assign');
+
+        Route::get('/personas', [PersonController::class, 'index'])->name('persons.index');
+        Route::post('/personas', [PersonController::class, 'store'])->name('persons.store');
+        Route::put('/personas/{person}', [PersonController::class, 'update'])->name('persons.update');
+        Route::delete('/personas/{person}', [PersonController::class, 'destroy'])->name('persons.destroy');
     });
 });
 
