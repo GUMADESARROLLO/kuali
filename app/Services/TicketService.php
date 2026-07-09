@@ -6,6 +6,7 @@ use App\Mail\TicketNotification;
 use App\Models\Ticket;
 use App\Models\TicketAttachment;
 use App\Models\TicketHistory;
+use App\Services\SlaService;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -35,6 +36,9 @@ class TicketService
                 'action' => TicketHistory::ACTION_CREATED,
                 'description' => 'Ticket creado',
             ]);
+
+            // Apply SLA
+            app(SlaService::class)->apply($ticket);
 
             // Upload attachments
             foreach ($files as $file) {

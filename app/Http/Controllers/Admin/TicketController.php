@@ -16,6 +16,7 @@ use App\Models\Subcategory;
 use App\Models\TicketComment;
 use App\Models\TicketHistory;
 use App\Models\User;
+use App\Services\SlaService;
 use App\Services\TicketService;
 use Illuminate\Support\Facades\Mail;
 
@@ -52,6 +53,10 @@ class TicketController extends Controller
             $query->where('department_id', $request->department_id);
         }
 
+        if ($request->escalated === 'yes') {
+            $query->where('is_escalated', true)->whereIn('status', ['abierto', 'en_proceso']);
+        }
+
         $perPage = in_array((int) $request->per_page, [10, 25, 50]) ? (int) $request->per_page : 10;
         $tickets = $query->latest()->paginate($perPage);
 
@@ -64,6 +69,7 @@ class TicketController extends Controller
                 'date_from' => $request->date_from ?? now()->toDateString(),
                 'date_to' => $request->date_to ?? now()->toDateString(),
                 'department_id' => $request->department_id ?? '',
+                'escalated' => $request->escalated ?? '',
             ],
         ]);
     }
@@ -101,6 +107,7 @@ class TicketController extends Controller
             'assignedAgent',
             'histories.user',
             'attachments.uploader',
+            'slaRule',
             'comments.author',
             'comments.attachments',
         ]);
@@ -159,6 +166,9 @@ class TicketController extends Controller
             'description' => 'Comentario agregado por ' . $request->user()->name,
         ]);
 
+        // Recalculate SLA update deadline
+        app(SlaService::class)->recalculate($ticket);
+
         foreach ($request->file('attachments', []) as $file) {
             $service->uploadAttachment($ticket, $file, $request->user()->id, $comment->id);
         }
@@ -205,6 +215,11 @@ class TicketController extends Controller
             'action' => TicketHistory::ACTION_STATUS_CHANGED,
             'description' => "Estado cambiado de '{$oldStatus}' a '{$newStatus}'",
         ]);
+
+        // Recalculate SLA when reopened
+        if (in_array($newStatus, ['abierto', 'en_proceso'])) {
+            app(SlaService::class)->recalculate($ticket);
+        }
 
         return redirect()->route('admin.tickets.show', $ticket)
             ->with('success', "Estado actualizado a '{$newStatus}'.");

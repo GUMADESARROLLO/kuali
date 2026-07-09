@@ -42,6 +42,8 @@ const navSections = computed<NavSection[]>(() => {
                     { key: 'users', label: 'Usuarios', icon: 'group', route: 'admin.users.index' },
                     { key: 'departments', label: 'Departamentos', icon: 'business', route: 'admin.departments.index' },
                     { key: 'categories', label: 'Categorías', icon: 'category', route: 'admin.categories.index' },
+                    { key: 'calendars', label: 'Calendarios', icon: 'calendar_month', route: 'admin.calendars.index' },
+                    { key: 'sla', label: 'Reglas SLA', icon: 'timer', route: 'admin.sla-rules.index' },
                 ],
             },
             {

@@ -16,6 +16,8 @@ class DatabaseSeeder extends Seeder
             AdminUserSeeder::class,
             DepartmentUsersSeeder::class,
             AgentSeeder::class,
+            CalendarSeeder::class,
+            SlaRuleSeeder::class,
             TicketSeeder::class,
             TicketCommentSeeder::class,
         ]);

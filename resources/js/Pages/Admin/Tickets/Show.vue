@@ -8,6 +8,7 @@ import { Head, Link, router, useForm, usePage } from '@inertiajs/vue3';
 interface TicketUser { id: number; name: string; email: string }
 interface Attachment { id: number; file_name: string; file_path: string; url: string; icon: string; comment_id: number | null }
 interface Comment { id: number; comment: string; is_internal: boolean; created_at: string; author: TicketUser; attachments: Attachment[] }
+interface SlaRule { id: number; name: string }
 interface Ticket {
     id: number; ticket_number: string; title: string; description: string;
     status: string; priority: string; created_at: string;
@@ -16,6 +17,12 @@ interface Ticket {
     category: { id: number; name: string } | null; subcategory: { id: number; name: string } | null;
     assigned_agent: TicketUser | null;
     comments: Comment[]; attachments: Attachment[];
+    sla_rule: SlaRule | null;
+    sla_rule_id: number | null;
+    first_response_due_at: string | null;
+    update_due_at: string | null;
+    solution_due_at: string | null;
+    is_escalated: boolean;
 }
 
 const props = defineProps<{ ticket: Ticket; agents: { id: number; name: string }[]; categories?: { id: number; name: string }[] }>();

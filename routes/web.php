@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\Admin\CalendarController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\DepartmentController;
 use App\Http\Controllers\Admin\ReportController;
+use App\Http\Controllers\Admin\SlaRuleController;
 use App\Http\Controllers\Admin\TicketController as AdminTicketController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Api\SubcategoryController;
@@ -73,6 +75,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::get('/reportes', [ReportController::class, 'index'])->name('reports.index');
         Route::get('/reportes/exportar', [ReportController::class, 'export'])->name('reports.export');
+
+        Route::get('/calendarios', [CalendarController::class, 'index'])->name('calendars.index');
+        Route::post('/calendarios', [CalendarController::class, 'store'])->name('calendars.store');
+        Route::put('/calendarios/{calendar}', [CalendarController::class, 'update'])->name('calendars.update');
+        Route::delete('/calendarios/{calendar}', [CalendarController::class, 'destroy'])->name('calendars.destroy');
+
+        Route::get('/sla', [SlaRuleController::class, 'index'])->name('sla-rules.index');
+        Route::post('/sla', [SlaRuleController::class, 'store'])->name('sla-rules.store');
+        Route::put('/sla/{slaRule}', [SlaRuleController::class, 'update'])->name('sla-rules.update');
+        Route::delete('/sla/{slaRule}', [SlaRuleController::class, 'destroy'])->name('sla-rules.destroy');
     });
 });
 

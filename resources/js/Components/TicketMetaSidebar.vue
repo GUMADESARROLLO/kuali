@@ -7,12 +7,19 @@ import axios from 'axios';
 interface CatItem { id: number; name: string }
 interface TicketUser { id: number; name: string; email: string }
 interface Agent { id: number; name: string }
+interface SlaRuleRef { id: number; name: string }
+
 interface Ticket {
     id: number; ticket_number: string; title: string; status: string; priority: string;
     created_at: string; resolved_at: string | null; closed_at: string | null;
     user: TicketUser; department: { name: string } | null;
     category: CatItem | null; subcategory: CatItem | null;
     assigned_agent: TicketUser | null;
+    sla_rule: SlaRuleRef | null;
+    first_response_due_at: string | null;
+    update_due_at: string | null;
+    solution_due_at: string | null;
+    is_escalated: boolean;
 }
 
 const props = defineProps<{ ticket: Ticket; agents: Agent[]; categories?: CatItem[] }>();
@@ -58,6 +65,16 @@ watch([selCategory, selSubcategory], ([cat, sub]) => {
 const auth = usePage().props.auth as any;
 const userRoles = (auth?.roles ?? []) as string[];
 const isAgent = userRoles.includes('agente_it') || userRoles.includes('admin_it');
+
+const timeLeft = (dateStr: string): string => {
+    const diff = new Date(dateStr).getTime() - Date.now();
+    if (diff <= 0) return 'Vencido';
+    const h = Math.floor(diff / (1000 * 60 * 60));
+    const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    if (h >= 24) return `${Math.floor(h / 24)}d ${h % 24}h`;
+    return `${h}h ${m}m`;
+};
+const isPast = (dateStr: string): boolean => new Date(dateStr).getTime() < Date.now();
 
 const assignAgent = ref(props.ticket.assigned_agent?.id ?? '');
 
@@ -142,6 +159,29 @@ const initAvatar = (name: string): string => {
                         {{ initAvatar(ticket.assigned_agent.name) }}
                     </div>
                     <span class="text-sm text-on-surface dark:text-gray-100">{{ ticket.assigned_agent?.name ?? 'Sin asignar' }}</span>
+                </div>
+            </div>
+
+            <!-- SLA Timer -->
+            <div v-if="ticket.sla_rule" class="mb-5 p-3 rounded-xl border" :class="ticket.is_escalated ? 'border-error/40 bg-error/5' : 'border-border-subtle dark:border-gray-600 bg-surface-container-lowest dark:bg-gray-800/50'">
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="material-symbols-outlined text-[16px]" :class="ticket.is_escalated ? 'text-error' : 'text-outline'">timer</span>
+                    <span class="text-xs font-semibold text-outline dark:text-gray-400 uppercase tracking-wider">SLA: {{ ticket.sla_rule.name }}</span>
+                    <span v-if="ticket.is_escalated" class="ml-auto px-1.5 py-0.5 rounded text-[10px] font-bold bg-error text-white">VENCIDO</span>
+                </div>
+                <div class="space-y-1 text-[12px]">
+                    <div v-if="ticket.first_response_due_at" class="flex justify-between">
+                        <span class="text-outline dark:text-gray-400">1ra Respuesta</span>
+                        <span :class="isPast(ticket.first_response_due_at) ? 'text-error font-bold' : 'text-on-surface dark:text-gray-200'">{{ timeLeft(ticket.first_response_due_at) }}</span>
+                    </div>
+                    <div v-if="ticket.update_due_at" class="flex justify-between">
+                        <span class="text-outline dark:text-gray-400">Actualización</span>
+                        <span :class="isPast(ticket.update_due_at) ? 'text-error font-bold' : 'text-on-surface dark:text-gray-200'">{{ timeLeft(ticket.update_due_at) }}</span>
+                    </div>
+                    <div v-if="ticket.solution_due_at" class="flex justify-between">
+                        <span class="text-outline dark:text-gray-400">Solución</span>
+                        <span :class="isPast(ticket.solution_due_at) ? 'text-error font-bold' : 'text-on-surface dark:text-gray-200'">{{ timeLeft(ticket.solution_due_at) }}</span>
+                    </div>
                 </div>
             </div>
 

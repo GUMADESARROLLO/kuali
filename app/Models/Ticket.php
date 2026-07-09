@@ -38,12 +38,23 @@ class Ticket extends Model
         'due_date',
         'resolved_at',
         'closed_at',
+        'sla_rule_id',
+        'first_response_due_at',
+        'update_due_at',
+        'solution_due_at',
+        'escalated_at',
+        'is_escalated',
     ];
 
     protected $casts = [
         'due_date' => 'datetime',
         'resolved_at' => 'datetime',
         'closed_at' => 'datetime',
+        'first_response_due_at' => 'datetime',
+        'update_due_at' => 'datetime',
+        'solution_due_at' => 'datetime',
+        'escalated_at' => 'datetime',
+        'is_escalated' => 'boolean',
     ];
 
     public function user(): BelongsTo
@@ -84,6 +95,11 @@ class Ticket extends Model
     public function histories(): HasMany
     {
         return $this->hasMany(TicketHistory::class)->latest();
+    }
+
+    public function slaRule(): BelongsTo
+    {
+        return $this->belongsTo(SlaRule::class, 'sla_rule_id');
     }
 
     public function rating(): \Illuminate\Database\Eloquent\Relations\HasOne

@@ -29,7 +29,7 @@ interface PaginationMeta {
     last_page: number;
 }
 
-interface Filters { search: string; date_from: string; date_to: string; department_id: string }
+interface Filters { search: string; date_from: string; date_to: string; department_id: string; escalated: string }
 
 const props = defineProps<{
     tickets: PaginationMeta;
@@ -43,6 +43,7 @@ const searchQuery = ref(props.filters?.search ?? '');
 const dateFrom = ref(props.filters?.date_from ?? new Date().toISOString().split('T')[0]);
 const dateTo = ref(props.filters?.date_to ?? new Date().toISOString().split('T')[0]);
 const departmentId = ref(props.filters?.department_id ?? '');
+const escalatedFilter = ref(props.filters?.escalated ?? '');
 
 const doSearch = () => {
     const params: Record<string, string> = {};
@@ -50,6 +51,7 @@ const doSearch = () => {
     if (dateFrom.value) params.date_from = dateFrom.value;
     if (dateTo.value) params.date_to = dateTo.value;
     if (departmentId.value) params.department_id = departmentId.value;
+    if (escalatedFilter.value) params.escalated = escalatedFilter.value;
     if (currentPerPage.value !== 10) params.per_page = String(currentPerPage.value);
     router.get(route('admin.tickets.index'), params, { preserveState: true, preserveScroll: true, replace: true });
 };
@@ -105,6 +107,12 @@ const changePerPage = (e: Event) => {
                     class="w-full sm:w-auto shrink-0 border-border-subtle dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-lg text-label-sm py-2 px-3 focus:ring-primary focus:border-primary outline-none">
                     <option value="">Todos los deptos</option>
                     <option v-for="d in departments" :key="d.id" :value="d.id">{{ d.name }}</option>
+                </select>
+
+                <select v-model="escalatedFilter"
+                    class="w-full sm:w-auto shrink-0 border-border-subtle dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-lg text-label-sm py-2 px-3 focus:ring-primary focus:border-primary outline-none">
+                    <option value="">Todos</option>
+                    <option value="yes">Vencidos (SLA)</option>
                 </select>
 
                 <button @click="doSearch"

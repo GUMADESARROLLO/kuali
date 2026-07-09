@@ -45,7 +45,7 @@ const toggleActive = (d: Department) => {
                         <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider">Slug</th>
                         <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider">Descripción</th>
                         <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider">Activo</th>
-                        <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider">Acciones</th>
+                        <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider text-center">Acciones</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-border-subtle dark:divide-gray-700">
@@ -59,9 +59,13 @@ const toggleActive = (d: Department) => {
                             </button>
                         </td>
                         <td class="px-6 py-3">
-                            <div class="flex items-center gap-2">
-                                <Link :href="route('admin.departments.edit', d.id)" class="text-label-sm text-primary hover:underline">Editar</Link>
-                                <button @click="destroy(d.id)" class="text-label-sm text-error hover:underline">Eliminar</button>
+                            <div class="flex items-center justify-center gap-2">
+                                <Link :href="route('admin.departments.edit', d.id)" class="p-1.5 text-on-surface-variant dark:text-gray-300 hover:text-deep-navy dark:hover:text-blue-300 hover:bg-surface-container dark:hover:bg-gray-700 rounded transition-all" title="Editar">
+                                    <span class="material-symbols-outlined text-[18px]">edit</span>
+                                </Link>
+                                <button @click="destroy(d.id)" class="p-1.5 text-on-surface-variant dark:text-gray-300 hover:text-error hover:bg-error-container/20 dark:hover:bg-red-900/30 rounded transition-all" title="Eliminar">
+                                    <span class="material-symbols-outlined text-[18px]">delete</span>
+                                </button>
                             </div>
                         </td>
                     </tr>
