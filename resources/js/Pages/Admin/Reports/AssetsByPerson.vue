@@ -30,7 +30,7 @@ const personId = ref<number | null>(props.person?.id ?? null);
 const personOptions = computed(() =>
     props.people.map(p => ({
         id: p.id,
-        label: `${p.last_name}, ${p.first_name}`,
+        label: `${p.first_name} ${p.last_name}`,
         subtitle: [p.company_name, p.department_name].filter(Boolean).join(' · ') || undefined,
     }))
 );
@@ -132,7 +132,7 @@ const catIcon = (cat: string | null): string => {
                     <div class="flex-1 grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-4">
                         <div class="col-span-2 sm:col-span-3">
                             <div class="text-[11px] uppercase font-mono text-outline mb-0.5">Colaborador</div>
-                            <div class="font-display font-semibold text-lg text-on-surface dark:text-gray-100">{{ person.last_name }}, {{ person.first_name }}</div>
+                            <div class="font-display font-semibold text-lg text-on-surface dark:text-gray-100 uppercase">{{ person.first_name }} {{ person.last_name }}</div>
                         </div>
                         <div>
                             <div class="text-[11px] uppercase font-mono text-outline mb-0.5">Empresa</div>

@@ -14,13 +14,15 @@ class TicketSeeder extends Seeder
 {
     public function run(): void
     {
-        $firstCompany = \App\Models\Company::first();
-        $companySlug = $firstCompany ? $firstCompany->slug : '';
-        $departments = Department::whereIn('slug', [
-            $companySlug . '-recursos-humanos',
-            $companySlug . '-contabilidad',
-            $companySlug . '-atencion-al-cliente-sac',
-        ])->get()->keyBy('slug');
+        $innova = \App\Models\Company::where('slug', 'innova-industrias')->first()
+            ?? \App\Models\Company::first();
+        $companySlug = $innova ? $innova->slug : '';
+        $departments = Department::where('company_id', $innova->id)
+            ->whereIn('name', [
+                'Recursos Humanos',
+                'Contabilidad',
+                'Atencion al Cliente (SAC)',
+            ])->get()->keyBy('slug');
 
         $users = User::whereIn('email', [
             'usuario@kuali.test',

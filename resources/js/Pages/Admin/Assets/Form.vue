@@ -35,7 +35,7 @@ const form = useForm({
 const personOptions = computed(() =>
     props.people.map(p => ({
         id: p.id,
-        label: `${p.last_name}, ${p.first_name}`,
+        label: `${p.first_name} ${p.last_name}`,
         subtitle: [p.company?.name, p.department?.name].filter(Boolean).join(' · '),
     }))
 );

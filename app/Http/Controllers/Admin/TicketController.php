@@ -147,6 +147,14 @@ class TicketController extends Controller
             'description' => 'Asignado a ' . $agent->name,
         ]);
 
+        // Notify assigned agent
+        try {
+            $ticket->load('user');
+            Mail::to($agent->email)->send(new TicketNotification($ticket, 'assigned'));
+        } catch (\Throwable $e) {
+            report($e);
+        }
+
         return redirect()->back()->with('success', 'Ticket asignado a ' . $agent->name);
     }
 
@@ -174,9 +182,12 @@ class TicketController extends Controller
         }
 
         try {
-            $ticket->load('user');
+            $ticket->load(['user', 'assignedAgent']);
             if ($ticket->user) {
                 Mail::to($ticket->user->email)->send(new TicketNotification($ticket, 'commented', $comment));
+            }
+            if ($ticket->assignedAgent && $ticket->assignedAgent->id !== $request->user()->id) {
+                Mail::to($ticket->assignedAgent->email)->send(new TicketNotification($ticket, 'commented', $comment));
             }
         } catch (\Throwable $e) {
             report($e);
@@ -302,9 +313,12 @@ class TicketController extends Controller
         ]);
 
         try {
-            $ticket->load('user');
+            $ticket->load(['user', 'assignedAgent']);
             if ($ticket->user) {
                 Mail::to($ticket->user->email)->send(new TicketNotification($ticket, 'resolved', $comment));
+            }
+            if ($ticket->assignedAgent && $ticket->assignedAgent->id !== $request->user()->id) {
+                Mail::to($ticket->assignedAgent->email)->send(new TicketNotification($ticket, 'resolved', $comment));
             }
         } catch (\Throwable $e) {
             report($e);

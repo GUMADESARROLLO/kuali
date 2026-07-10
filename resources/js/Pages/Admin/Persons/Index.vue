@@ -77,36 +77,36 @@ const applyFilters = () => {
 
             <table class="w-full text-left">
                 <thead>
-                    <tr class="bg-surface-container-low dark:bg-gray-700 border-b border-border-subtle">
-                        <th class="px-6 py-3 text-label-sm uppercase text-outline font-bold tracking-wider">Nombre</th>
-                        <th class="px-6 py-3 text-label-sm uppercase text-outline font-bold tracking-wider">Email</th>
-                        <th class="px-6 py-3 text-label-sm uppercase text-outline font-bold tracking-wider">Tel&eacute;fono</th>
-                        <th class="px-6 py-3 text-label-sm uppercase text-outline font-bold tracking-wider">Empresa</th>
-                        <th class="px-6 py-3 text-label-sm uppercase text-outline font-bold tracking-wider">Departamento</th>
-                        <th class="px-6 py-3 text-label-sm uppercase text-outline font-bold tracking-wider text-center">Acciones</th>
+                    <tr class="bg-surface-container-low dark:bg-gray-700 border-b border-border-subtle dark:border-gray-700">
+                        <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider">Nombre</th>
+                        <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider">Email</th>
+                        <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider">Tel&eacute;fono</th>
+                        <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider">Empresa</th>
+                        <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider">Departamento</th>
+                        <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider text-center">Acciones</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-border-subtle">
+                <tbody class="divide-y divide-border-subtle dark:divide-gray-700">
                     <tr v-for="p in persons.data" :key="p.id" class="hover:bg-surface-container-lowest dark:hover:bg-gray-700/50">
-                        <td class="px-6 py-3 text-body-sm text-on-surface dark:text-gray-100 font-semibold">{{ p.last_name }}, {{ p.first_name }}</td>
-                        <td class="px-6 py-3 text-body-sm text-outline">{{ p.email || '—' }}</td>
-                        <td class="px-6 py-3 text-body-sm text-outline">{{ p.phone || '—' }}</td>
-                        <td class="px-6 py-3 text-body-sm text-outline">{{ p.company?.name ?? '—' }}</td>
-                        <td class="px-6 py-3 text-body-sm text-outline">{{ p.department?.name ?? '—' }}</td>
+                        <td class="px-6 py-3 text-body-sm text-on-surface dark:text-gray-100 font-semibold uppercase">{{ p.first_name }} {{ p.last_name }}</td>
+                        <td class="px-6 py-3 text-body-sm text-outline dark:text-gray-400">{{ p.email || '—' }}</td>
+                        <td class="px-6 py-3 text-body-sm text-outline dark:text-gray-400">{{ p.phone || '—' }}</td>
+                        <td class="px-6 py-3 text-body-sm text-outline dark:text-gray-400">{{ p.company?.name ?? '—' }}</td>
+                        <td class="px-6 py-3 text-body-sm text-outline dark:text-gray-400">{{ p.department?.name ?? '—' }}</td>
                         <td class="px-6 py-3">
                             <div class="flex items-center justify-center gap-2">
-                                <button @click="openEdit(p)" class="p-1.5 text-on-surface-variant hover:text-deep-navy hover:bg-surface-container rounded" title="Editar"><span class="material-symbols-outlined text-[18px]">edit</span></button>
-                                <button @click="destroy(p.id, p.first_name + ' ' + p.last_name)" class="p-1.5 text-on-surface-variant hover:text-error hover:bg-error-container/20 rounded" title="Eliminar"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+                                <button @click="openEdit(p)" class="p-1.5 text-on-surface-variant dark:text-gray-300 hover:text-deep-navy dark:hover:text-blue-300 hover:bg-surface-container dark:hover:bg-gray-700 rounded transition-all" title="Editar"><span class="material-symbols-outlined text-[18px]">edit</span></button>
+                                <button @click="destroy(p.id, p.first_name + ' ' + p.last_name)" class="p-1.5 text-on-surface-variant dark:text-gray-300 hover:text-error hover:bg-error-container/20 dark:hover:bg-red-900/30 rounded transition-all" title="Eliminar"><span class="material-symbols-outlined text-[18px]">delete</span></button>
                             </div>
                         </td>
                     </tr>
                     <tr v-if="!persons.data.length"><td colspan="7" class="py-12 text-center text-outline text-body-sm">Sin personas registradas.</td></tr>
                 </tbody>
             </table>
-            <div class="p-4 flex items-center justify-between border-t border-border-subtle">
-                <p class="text-body-sm text-outline">{{ persons.from }}–{{ persons.to }} de {{ persons.total }}</p>
+            <div class="p-4 flex items-center justify-between border-t border-border-subtle dark:border-gray-700">
+                <p class="text-body-sm text-outline dark:text-gray-400">{{ persons.from }}–{{ persons.to }} de {{ persons.total }}</p>
                 <div class="flex items-center gap-2">
-                    <button v-for="l in persons.links" :key="l.label" @click="l.url && router.visit(l.url, { preserveState: true })" :disabled="!l.url || l.active" class="min-w-9 h-9 flex items-center justify-center rounded-lg text-label-sm" :class="l.active ? 'bg-deep-navy text-white font-bold' : l.url ? 'border border-border-subtle text-outline hover:bg-surface-container-low' : 'text-outline/30 cursor-not-allowed'" v-html="l.label" />
+                    <button v-for="l in persons.links" :key="l.label" @click="l.url && router.visit(l.url, { preserveState: true })" :disabled="!l.url || l.active" class="min-w-9 h-9 flex items-center justify-center rounded-lg text-label-sm" :class="l.active ? 'bg-deep-navy text-white font-bold' : l.url ? 'border border-border-subtle dark:border-gray-600 text-outline dark:text-gray-300 hover:bg-surface-container-low dark:hover:bg-gray-700' : 'text-outline/30 dark:text-gray-600 cursor-not-allowed'" v-html="l.label" />
                 </div>
             </div>
         </div>

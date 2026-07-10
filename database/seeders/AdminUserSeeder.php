@@ -12,11 +12,11 @@ class AdminUserSeeder extends Seeder
 {
     public function run(): void
     {
-        $firstCompany = Company::first();
-        if (!$firstCompany) return;
+        $unimark = Company::where('slug', 'unimark-sa')->first() ?? Company::first();
+        if (!$unimark) return;
 
-        $itDept = Department::where('company_id', $firstCompany->id)->where('slug', $firstCompany->slug . '-tecnologia')->first()
-            ?? Department::where('company_id', $firstCompany->id)->first();
+        $itDept = Department::where('company_id', $unimark->id)->where('name', 'Informatica')->first()
+            ?? Department::where('company_id', $unimark->id)->first();
 
         $admin = User::updateOrCreate(
             ['email' => 'admin@kuali.test'],
@@ -44,11 +44,11 @@ class AdminUserSeeder extends Seeder
         );
         $agent->syncRoles(['agente_it']);
 
-        $rhDept = Department::where('company_id', $firstCompany->id)->where('slug', $firstCompany->slug . '-recursos-humanos')->first();
+        $rhDept = Department::where('company_id', $unimark->id)->where('name', 'Gestion Humana')->first();
         $user = User::updateOrCreate(
             ['email' => 'usuario@kuali.test'],
             [
-                'name' => 'Representante RRHH',
+                'name' => 'Usuario RRHH',
                 'password' => Hash::make('password'),
                 'department_id' => $rhDept?->id ?? $itDept?->id,
                 'phone' => '+10000000002',

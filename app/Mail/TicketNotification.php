@@ -16,7 +16,7 @@ class TicketNotification extends Mailable
 
     public Ticket $ticket;
     public ?TicketComment $comment;
-    public string $action; // 'created' | 'commented' | 'resolved'
+    public string $action; // 'created' | 'commented' | 'resolved' | 'assigned'
 
     public function __construct(Ticket $ticket, string $action, ?TicketComment $comment = null)
     {
@@ -31,6 +31,7 @@ class TicketNotification extends Mailable
             'created' => "[{$this->ticket->ticket_number}] Nuevo ticket: {$this->ticket->title}",
             'commented' => "[{$this->ticket->ticket_number}] Nueva respuesta: {$this->ticket->title}",
             'resolved' => "[{$this->ticket->ticket_number}] Ticket resuelto: {$this->ticket->title}",
+            'assigned' => "[{$this->ticket->ticket_number}] Ticket asignado a ti: {$this->ticket->title}",
             default => "[{$this->ticket->ticket_number}] Actualización: {$this->ticket->title}",
         };
 

@@ -12,23 +12,23 @@ class DepartmentUsersSeeder extends Seeder
 {
     public function run(): void
     {
-        $firstCompany = Company::first();
-        if (!$firstCompany) return;
+        $innova = Company::where('slug', 'innova-industrias')->first();
+        if (!$innova) return;
 
-        $depts = [
-            ['slug_suffix' => 'contabilidad', 'email' => 'contabilidad@kuali.test', 'name' => 'Representante Contabilidad'],
-            ['slug_suffix' => 'atencion-al-cliente-sac', 'email' => 'sac@kuali.test', 'name' => 'Representante SAC'],
+        $deptNames = [
+            ['name' => 'Contabilidad', 'email' => 'contabilidad@kuali.test', 'display' => 'Representante Contabilidad'],
+            ['name' => 'Atencion al Cliente (SAC)', 'email' => 'sac@kuali.test', 'display' => 'Representante SAC'],
         ];
 
-        foreach ($depts as $d) {
-            $dept = Department::where('company_id', $firstCompany->id)
-                ->where('slug', $firstCompany->slug . '-' . $d['slug_suffix'])
+        foreach ($deptNames as $d) {
+            $dept = Department::where('company_id', $innova->id)
+                ->where('name', $d['name'])
                 ->first();
 
             $user = User::updateOrCreate(
                 ['email' => $d['email']],
                 [
-                    'name' => $d['name'],
+                    'name' => $d['display'],
                     'password' => Hash::make('password'),
                     'department_id' => $dept?->id,
                     'phone' => '+10000000' . random_int(100, 999),

@@ -148,7 +148,7 @@ const statusClass = (s: string) => ({ 'bg-green-100 text-green-700': s === 'disp
                 <div class="bg-white dark:bg-gray-800 rounded-xl border border-border-subtle dark:border-gray-700 shadow-sm p-5">
                     <h3 class="text-label-sm font-semibold text-outline uppercase tracking-wider mb-3">Asignado a</h3>
                     <div v-if="asset.assigned_person" class="mb-3">
-                        <p class="text-body-sm font-semibold text-on-surface dark:text-gray-100">{{ asset.assigned_person.first_name }} {{ asset.assigned_person.last_name }}</p>
+                        <p class="text-body-sm font-semibold text-on-surface dark:text-gray-100 uppercase">{{ asset.assigned_person.first_name }} {{ asset.assigned_person.last_name }}</p>
                         <p v-if="asset.assigned_person.email" class="text-body-sm text-outline">{{ asset.assigned_person.email }}</p>
                         <div v-if="asset.assigned_person.company || asset.assigned_person.department" class="mt-2 pt-2 border-t border-border-subtle dark:border-gray-600">
                             <p v-if="asset.assigned_person.company" class="text-label-sm text-outline">{{ asset.assigned_person.company.name }}</p>
@@ -189,7 +189,7 @@ const statusClass = (s: string) => ({ 'bg-green-100 text-green-700': s === 'disp
                         <label class="block text-sm font-semibold">Usuario</label>
                         <select v-model="personId" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                             <option value="">Sin asignar</option>
-                            <option v-for="p in people" :key="p.id" :value="p.id">{{ p.first_name }} {{ p.last_name }}{{ p.email ? ' (' + p.email + ')' : '' }}</option>
+                            <option v-for="p in people" :key="p.id" :value="p.id" class="uppercase">{{ p.first_name }} {{ p.last_name }}{{ p.email ? ' (' + p.email + ')' : '' }}</option>
                         </select>
                     </div>
                     <div class="flex justify-end gap-3 mt-6">
