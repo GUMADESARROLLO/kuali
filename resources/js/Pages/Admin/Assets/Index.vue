@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AppLayout from '@/Layouts/AppLayout.vue';
+import PaginationBar from '@/Components/PaginationBar.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
@@ -60,20 +61,22 @@ const statusLabel: Record<string, string> = { disponible: 'Disponible', asignado
             <Link :href="route('admin.assets.create')" class="bg-deep-navy hover:bg-primary text-white px-5 py-2.5 rounded-lg text-label-md flex items-center gap-2">+ Nuevo</Link>
         </div>
         <div class="bg-white dark:bg-gray-800 rounded-xl border border-border-subtle dark:border-gray-700 shadow-sm overflow-visible flex flex-col">
-            <div class="p-4 flex flex-wrap items-center gap-3 bg-surface-container-lowest dark:bg-gray-800/50 border-b border-border-subtle dark:border-gray-700">
-                <div class="relative w-56 shrink-0">
+            <div class="p-4 grid grid-cols-1 sm:flex sm:flex-wrap items-center gap-3 bg-surface-container-lowest dark:bg-gray-800/50 border-b border-border-subtle dark:border-gray-700">
+                <div class="relative w-full sm:w-56 shrink-0">
                     <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[18px]">search</span>
                     <input v-model="search" @keydown.enter="applyFilters" class="w-full pl-10 pr-4 py-2 border border-border-subtle dark:border-gray-600 rounded-lg text-body-sm bg-white dark:bg-gray-700 dark:text-gray-200 focus:ring-primary focus:border-primary outline-none" placeholder="Buscar por código, nombre..." />
                 </div>
-                <select v-model="companyFilter" class="shrink-0 border-border-subtle dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-lg text-label-sm py-2 px-3 focus:ring-primary focus:border-primary outline-none">
-                    <option value="">Todas las empresas</option>
-                    <option v-for="c in companies" :key="c.id" :value="c.id">{{ c.name }}</option>
-                </select>
-                <select v-model="categoryFilter" class="shrink-0 border-border-subtle dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-lg text-label-sm py-2 px-3 focus:ring-primary focus:border-primary outline-none">
-                    <option value="">Todas las categorías</option>
-                    <option v-for="c in categories" :key="c.id" :value="c.id">{{ c.name }}</option>
-                </select>
-                <select v-model="statusFilter" class="shrink-0 border-border-subtle dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-lg text-label-sm py-2 px-3 focus:ring-primary focus:border-primary outline-none">
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+                    <select v-model="companyFilter" class="w-full sm:w-auto shrink-0 border-border-subtle dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-lg text-label-sm py-2 px-3 focus:ring-primary focus:border-primary outline-none">
+                        <option value="">Todas las empresas</option>
+                        <option v-for="c in companies" :key="c.id" :value="c.id">{{ c.name }}</option>
+                    </select>
+                    <select v-model="categoryFilter" class="w-full sm:w-auto shrink-0 border-border-subtle dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-lg text-label-sm py-2 px-3 focus:ring-primary focus:border-primary outline-none">
+                        <option value="">Todas las categorías</option>
+                        <option v-for="c in categories" :key="c.id" :value="c.id">{{ c.name }}</option>
+                    </select>
+                </div>
+                <select v-model="statusFilter" class="w-full sm:w-auto shrink-0 border-border-subtle dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-lg text-label-sm py-2 px-3 focus:ring-primary focus:border-primary outline-none">
                     <option value="">Todos los estados</option>
                     <option value="disponible">Disponible</option>
                     <option value="asignado">Asignado</option>
@@ -82,17 +85,18 @@ const statusLabel: Record<string, string> = { disponible: 'Disponible', asignado
                 </select>
                 <button @click="applyFilters" class="px-4 py-2 bg-deep-navy text-white rounded-lg text-label-sm hover:bg-primary transition-all shrink-0">Filtrar</button>
             </div>
-            <table class="w-full text-left">
+            <div class="overflow-x-auto">
+            <table class="w-full text-left min-w-[700px]">
                 <thead>
                     <tr class="bg-surface-container-low dark:bg-gray-700 border-b border-border-subtle dark:border-gray-700">
-                        <th class="px-6 py-3 text-label-sm uppercase text-outline font-bold tracking-wider">Código</th>
-                        <th class="px-6 py-3 text-label-sm uppercase text-outline font-bold tracking-wider">Nombre</th>
-                        <th class="px-6 py-3 text-label-sm uppercase text-outline font-bold tracking-wider">Marca</th>
-                        <th class="px-6 py-3 text-label-sm uppercase text-outline font-bold tracking-wider">Modelo</th>
-                        <th class="px-6 py-3 text-label-sm uppercase text-outline font-bold tracking-wider">Serie</th>
-                        <th class="px-6 py-3 text-label-sm uppercase text-outline font-bold tracking-wider">Categoría</th>
-                        <th class="px-6 py-3 text-label-sm uppercase text-outline font-bold tracking-wider">Estado</th>
-                        <th class="px-6 py-3 text-label-sm uppercase text-outline font-bold tracking-wider text-center">Acciones</th>
+                        <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider">Código</th>
+                        <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider">Nombre</th>
+                        <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider hidden sm:table-cell">Marca</th>
+                        <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider hidden sm:table-cell">Modelo</th>
+                        <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider hidden md:table-cell">Serie</th>
+                        <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider hidden md:table-cell">Categoría</th>
+                        <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider">Estado</th>
+                        <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider text-center">Acciones</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-border-subtle dark:divide-gray-700">
@@ -101,10 +105,10 @@ const statusLabel: Record<string, string> = { disponible: 'Disponible', asignado
                         <td class="px-6 py-3 text-body-sm text-on-surface dark:text-gray-100">
                             <Link :href="route('admin.assets.show', a.id)" class="hover:text-primary transition-colors">{{ a.name }}</Link>
                         </td>
-                        <td class="px-6 py-3 text-body-sm text-outline dark:text-gray-400">{{ a.brand || '—' }}</td>
-                        <td class="px-6 py-3 text-body-sm text-outline dark:text-gray-400">{{ a.model || '—' }}</td>
-                        <td class="px-6 py-3 text-body-sm text-outline dark:text-gray-400 font-mono">{{ a.serial_number || '—' }}</td>
-                        <td class="px-6 py-3 text-body-sm text-outline dark:text-gray-400">{{ a.category?.name ?? '—' }}</td>
+                        <td class="px-6 py-3 text-body-sm text-outline dark:text-gray-400 hidden sm:table-cell">{{ a.brand || '—' }}</td>
+                        <td class="px-6 py-3 text-body-sm text-outline dark:text-gray-400 hidden sm:table-cell">{{ a.model || '—' }}</td>
+                        <td class="px-6 py-3 text-body-sm text-outline dark:text-gray-400 font-mono hidden md:table-cell">{{ a.serial_number || '—' }}</td>
+                        <td class="px-6 py-3 text-body-sm text-outline dark:text-gray-400 hidden md:table-cell">{{ a.category?.name ?? '—' }}</td>
                         <td class="px-6 py-3"><span class="px-2 py-0.5 rounded text-[11px] font-bold" :class="statusClass(a.status)">{{ statusLabel[a.status] || a.status }}</span></td>
                         <td class="px-6 py-3">
                             <div class="flex items-center justify-center gap-2">
@@ -116,12 +120,8 @@ const statusLabel: Record<string, string> = { disponible: 'Disponible', asignado
                     </tr>
                 </tbody>
             </table>
-            <div class="p-4 flex items-center justify-between border-t border-border-subtle dark:border-gray-700">
-                <p class="text-body-sm text-outline">{{ assets.from }}–{{ assets.to }} de {{ assets.total }}</p>
-                <div class="flex items-center gap-2">
-                    <Link v-for="l in assets.links" :key="l.label" :href="l.url || '#'" :disabled="!l.url || l.active" class="min-w-9 h-9 flex items-center justify-center rounded-lg text-label-sm transition-colors" :class="l.active ? 'bg-deep-navy text-white font-bold' : l.url ? 'border border-border-subtle text-outline hover:bg-surface-container-low' : 'text-outline/30 cursor-not-allowed'" v-html="l.label" />
-                </div>
             </div>
+            <PaginationBar :links="assets.links" :from="assets.from" :to="assets.to" :total="assets.total" />
         </div>
     </AppLayout>
 </template>

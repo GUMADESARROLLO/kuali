@@ -82,7 +82,7 @@ const changePerPage = (e: Event) => {
         </div>
 
         <div class="bg-white dark:bg-gray-800 rounded-xl border border-border-subtle dark:border-gray-700 shadow-sm overflow-visible flex flex-col">
-<div class="p-4 flex flex-wrap items-center gap-4 bg-surface-container-lowest dark:bg-gray-800/50">
+<div class="p-4 grid grid-cols-1 sm:flex sm:flex-wrap items-center gap-3 bg-surface-container-lowest dark:bg-gray-800/50">
                 <div class="relative w-full sm:flex-1 sm:min-w-[200px] shrink-0">
                     <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[18px]">search</span>
                     <input
@@ -103,32 +103,36 @@ const changePerPage = (e: Event) => {
                     </div>
                 </div>
 
-                <select v-model="departmentId"
-                    class="w-full sm:w-auto shrink-0 border-border-subtle dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-lg text-label-sm py-2 px-3 focus:ring-primary focus:border-primary outline-none">
-                    <option value="">Todos los deptos</option>
-                    <option v-for="d in departments" :key="d.id" :value="d.id">{{ d.name }}</option>
-                </select>
+                <div class="flex items-center gap-2 w-full sm:w-auto">
+                    <select v-model="departmentId"
+                        class="flex-1 sm:w-auto shrink-0 border-border-subtle dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-lg text-label-sm py-2 px-3 focus:ring-primary focus:border-primary outline-none">
+                        <option value="">Todos los deptos</option>
+                        <option v-for="d in departments" :key="d.id" :value="d.id">{{ d.name }}</option>
+                    </select>
 
-                <select v-model="escalatedFilter"
-                    class="w-full sm:w-auto shrink-0 border-border-subtle dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-lg text-label-sm py-2 px-3 focus:ring-primary focus:border-primary outline-none">
-                    <option value="">Todos</option>
-                    <option value="yes">Vencidos (SLA)</option>
-                </select>
+                    <select v-model="escalatedFilter"
+                        class="flex-1 sm:w-auto shrink-0 border-border-subtle dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-lg text-label-sm py-2 px-3 focus:ring-primary focus:border-primary outline-none">
+                        <option value="">Todos</option>
+                        <option value="yes">Vencidos (SLA)</option>
+                    </select>
+                </div>
 
-                <button @click="doSearch"
-                    class="px-4 py-2 bg-deep-navy text-white rounded-lg text-label-sm hover:bg-primary transition-all shrink-0">
-                    Filtrar
-                </button>
+                <div class="flex items-center gap-2 w-full sm:w-auto">
+                    <button @click="doSearch"
+                        class="flex-1 sm:flex-initial px-4 py-2 bg-deep-navy text-white rounded-lg text-label-sm hover:bg-primary transition-all shrink-0">
+                        Filtrar
+                    </button>
 
-                <select
-                    :value="currentPerPage"
-                    @change="changePerPage"
-                    class="w-full sm:w-auto border-border-subtle dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-lg text-label-sm py-2 px-3 focus:ring-primary focus:border-primary outline-none"
-                >
+                    <select
+                        :value="currentPerPage"
+                        @change="changePerPage"
+                        class="w-24 sm:w-auto border-border-subtle dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-lg text-label-sm py-2 px-3 focus:ring-primary focus:border-primary outline-none"
+                    >
                     <option :value="10">10 / page</option>
                     <option :value="25">25 / page</option>
                     <option :value="50">50 / page</option>
                 </select>
+            </div>
             </div>
 
             <!-- Table -->

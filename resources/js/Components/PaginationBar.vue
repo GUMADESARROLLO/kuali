@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 import { router } from '@inertiajs/vue3';
 
 interface PaginationLink {
@@ -7,7 +8,7 @@ interface PaginationLink {
     active: boolean;
 }
 
-defineProps<{
+const props = defineProps<{
     links: PaginationLink[];
     from: number;
     to: number;
@@ -18,17 +19,20 @@ const goTo = (url: string | null) => {
     if (!url) return;
     router.visit(url, { preserveState: true, preserveScroll: true });
 };
+
+const prevLink = computed(() => props.links[0] ?? null);
+const nextLink = computed(() => props.links[props.links.length - 1] ?? null);
+const pageLinks = computed(() => props.links.slice(1, -1));
 </script>
 
 <template>
-    <div class="p-6 bg-surface-container-lowest dark:bg-gray-800 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-border-subtle dark:border-gray-700">
-        <p class="text-body-sm text-outline dark:text-gray-400">
-            Showing <span class="font-bold text-on-surface dark:text-gray-100">{{ from }}</span>
-            to <span class="font-bold text-on-surface dark:text-gray-100">{{ to }}</span>
-            of <span class="font-bold text-on-surface dark:text-gray-100">{{ total }}</span> tickets
+    <div class="p-4 sm:p-6 bg-surface-container-lowest dark:bg-gray-800 flex items-center justify-between gap-2 border-t border-border-subtle dark:border-gray-700">
+        <p class="text-body-sm text-outline dark:text-gray-400 hidden sm:block">
+            {{ from }}–{{ to }} de {{ total }}
         </p>
 
-        <div class="flex items-center gap-2">
+        <!-- Desktop: full pagination -->
+        <div class="hidden sm:flex items-center gap-1">
             <button
                 v-for="(link, i) in links"
                 :key="i"
@@ -44,6 +48,27 @@ const goTo = (url: string | null) => {
                 ]"
                 v-html="link.label"
             />
+        </div>
+
+        <!-- Mobile: compact pagination -->
+        <div class="flex sm:hidden items-center justify-between w-full">
+            <button
+                @click="goTo(prevLink.url)"
+                :disabled="!prevLink?.url"
+                class="flex items-center gap-1 px-3 py-1.5 border border-border-subtle dark:border-gray-600 rounded-lg text-label-sm disabled:opacity-30 text-outline dark:text-gray-300"
+            >
+                <span class="material-symbols-outlined text-[16px]">chevron_left</span>
+                Ant
+            </button>
+            <span class="text-body-sm text-outline dark:text-gray-400">{{ from }}–{{ to }} / {{ total }}</span>
+            <button
+                @click="goTo(nextLink.url)"
+                :disabled="!nextLink?.url"
+                class="flex items-center gap-1 px-3 py-1.5 border border-border-subtle dark:border-gray-600 rounded-lg text-label-sm disabled:opacity-30 text-outline dark:text-gray-300"
+            >
+                Sig
+                <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+            </button>
         </div>
     </div>
 </template>

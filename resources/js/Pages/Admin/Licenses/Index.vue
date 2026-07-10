@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import AppLayout from '@/Layouts/AppLayout.vue';
 import DatePicker from '@/Components/DatePicker.vue';
+import PaginationBar from '@/Components/PaginationBar.vue';
 import { Head, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
@@ -67,55 +68,54 @@ const applyFilters = () => {
             <button @click="openCreate" class="bg-deep-navy hover:bg-primary text-white px-5 py-2.5 rounded-lg text-label-md flex items-center gap-2">+ Nueva</button>
         </div>
         <div class="bg-white dark:bg-gray-800 rounded-xl border border-border-subtle dark:border-gray-700 shadow-sm overflow-visible flex flex-col">
-            <div class="p-4 flex items-center gap-3 bg-surface-container-lowest dark:bg-gray-800/50 border-b border-border-subtle dark:border-gray-700">
-                <div class="relative w-56 shrink-0">
+            <div class="p-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 bg-surface-container-lowest dark:bg-gray-800/50 border-b border-border-subtle dark:border-gray-700">
+                <div class="relative w-full sm:w-56 shrink-0">
                     <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[18px]">search</span>
                     <input v-model="search" @keydown.enter="applyFilters" class="w-full pl-10 pr-4 py-2 border border-border-subtle dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 dark:text-gray-200" placeholder="Buscar licencia..." />
                 </div>
-                <select v-model="companyFilter" class="shrink-0 border-border-subtle dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-lg text-label-sm py-2 px-3">
-                    <option value="">Todas las empresas</option>
-                    <option v-for="c in companies" :key="c.id" :value="c.id">{{ c.name }}</option>
-                </select>
-                <button @click="applyFilters" class="px-4 py-2 bg-deep-navy text-white rounded-lg text-label-sm hover:bg-primary shrink-0">Filtrar</button>
+                <div class="flex items-center gap-2 w-full sm:w-auto">
+                    <select v-model="companyFilter" class="flex-1 sm:w-auto shrink-0 border-border-subtle dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-lg text-label-sm py-2 px-3">
+                        <option value="">Todas las empresas</option>
+                        <option v-for="c in companies" :key="c.id" :value="c.id">{{ c.name }}</option>
+                    </select>
+                    <button @click="applyFilters" class="px-4 py-2 bg-deep-navy text-white rounded-lg text-label-sm hover:bg-primary shrink-0">Filtrar</button>
+                </div>
             </div>
-            <table class="w-full text-left">
+            <div class="overflow-x-auto">
+            <table class="w-full text-left min-w-[650px]">
                 <thead>
                     <tr class="bg-surface-container-low dark:bg-gray-700 border-b border-border-subtle dark:border-gray-700">
-                        <th class="px-6 py-3 text-label-sm uppercase text-outline font-bold tracking-wider">Nombre</th>
-                        <th class="px-6 py-3 text-label-sm uppercase text-outline font-bold tracking-wider">Empresa</th>
-                        <th class="px-6 py-3 text-label-sm uppercase text-outline font-bold tracking-wider">Proveedor</th>
-                        <th class="px-6 py-3 text-label-sm uppercase text-outline font-bold tracking-wider">Asientos</th>
-                        <th class="px-6 py-3 text-label-sm uppercase text-outline font-bold tracking-wider">Vence</th>
-                        <th class="px-6 py-3 text-label-sm uppercase text-outline font-bold tracking-wider">Tipo pago</th>
-                        <th class="px-6 py-3 text-label-sm uppercase text-outline font-bold tracking-wider">Coste</th>
-                        <th class="px-6 py-3 text-label-sm uppercase text-outline font-bold tracking-wider text-center">Acciones</th>
+                        <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider">Nombre</th>
+                        <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider hidden sm:table-cell">Empresa</th>
+                        <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider hidden md:table-cell">Proveedor</th>
+                        <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider">Asientos</th>
+                        <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider hidden md:table-cell">Vence</th>
+                        <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider">Tipo pago</th>
+                        <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider hidden sm:table-cell">Coste</th>
+                        <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider text-center">Acciones</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-border-subtle dark:divide-gray-700">
                     <tr v-for="l in licenses.data" :key="l.id" class="hover:bg-surface-container-lowest dark:hover:bg-gray-700/50">
                         <td class="px-6 py-3 text-body-sm text-on-surface dark:text-gray-100 font-semibold">{{ l.name }}</td>
-                        <td class="px-6 py-3 text-body-sm text-outline">{{ l.company?.name ?? '—' }}</td>
-                        <td class="px-6 py-3 text-body-sm text-outline">{{ l.vendor || '—' }}</td>
+                        <td class="px-6 py-3 text-body-sm text-outline dark:text-gray-400 hidden sm:table-cell">{{ l.company?.name ?? '—' }}</td>
+                        <td class="px-6 py-3 text-body-sm text-outline dark:text-gray-400 hidden md:table-cell">{{ l.vendor || '—' }}</td>
                         <td class="px-6 py-3 text-body-sm"><span class="font-bold" :class="l.seats_used >= l.seats_total ? 'text-error' : 'text-on-surface dark:text-gray-200'">{{ l.seats_used }}/{{ l.seats_total }}</span></td>
-                        <td class="px-6 py-3 text-body-sm text-outline">{{ l.expiry_date ? new Date(l.expiry_date).toLocaleDateString('es') : '—' }}</td>
-                        <td class="px-6 py-3 text-body-sm text-outline">{{ l.recurring ? (l.billing_period === 'mensual' ? 'Mensual' : 'Anual') : 'Único' }}</td>
-                        <td class="px-6 py-3 text-body-sm text-outline font-mono">{{ l.cost || '—' }}</td>
+                        <td class="px-6 py-3 text-body-sm text-outline dark:text-gray-400 hidden md:table-cell">{{ l.expiry_date ? new Date(l.expiry_date).toLocaleDateString('es') : '—' }}</td>
+                        <td class="px-6 py-3 text-body-sm text-outline dark:text-gray-400">{{ l.recurring ? (l.billing_period === 'mensual' ? 'Mensual' : 'Anual') : 'Único' }}</td>
+                        <td class="px-6 py-3 text-body-sm text-outline dark:text-gray-400 font-mono hidden sm:table-cell">{{ l.cost || '—' }}</td>
                         <td class="px-6 py-3">
                             <div class="flex items-center justify-center gap-2">
-                                <button @click="openEdit(l)" class="p-1.5 text-on-surface-variant hover:text-deep-navy hover:bg-surface-container rounded" title="Editar"><span class="material-symbols-outlined text-[18px]">edit</span></button>
-                                <button @click="destroy(l.id, l.name)" class="p-1.5 text-on-surface-variant hover:text-error hover:bg-error-container/20 rounded" title="Eliminar"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+                                <button @click="openEdit(l)" class="p-1.5 text-on-surface-variant dark:text-gray-300 hover:text-deep-navy dark:hover:text-blue-300 hover:bg-surface-container dark:hover:bg-gray-700 rounded transition-all" title="Editar"><span class="material-symbols-outlined text-[18px]">edit</span></button>
+                                <button @click="destroy(l.id, l.name)" class="p-1.5 text-on-surface-variant dark:text-gray-300 hover:text-error hover:bg-error-container/20 dark:hover:bg-red-900/30 rounded transition-all" title="Eliminar"><span class="material-symbols-outlined text-[18px]">delete</span></button>
                             </div>
                         </td>
                     </tr>
-                    <tr v-if="!licenses.data.length"><td colspan="6" class="py-12 text-center text-outline text-body-sm">Sin licencias.</td></tr>
+                    <tr v-if="!licenses.data.length"><td colspan="8" class="py-12 text-center text-outline dark:text-gray-400 text-body-sm">Sin licencias.</td></tr>
                 </tbody>
             </table>
-            <div class="p-4 flex items-center justify-between border-t border-border-subtle">
-                <p class="text-body-sm text-outline">{{ licenses.from }}–{{ licenses.to }} de {{ licenses.total }}</p>
-                <div class="flex items-center gap-2">
-                    <button v-for="l in licenses.links" :key="l.label" @click="l.url && router.visit(l.url, { preserveState: true })" :disabled="!l.url || l.active" class="min-w-9 h-9 flex items-center justify-center rounded-lg text-label-sm" :class="l.active ? 'bg-deep-navy text-white font-bold' : l.url ? 'border border-border-subtle text-outline hover:bg-surface-container-low' : 'text-outline/30 cursor-not-allowed'" v-html="l.label" />
-                </div>
             </div>
+            <PaginationBar :links="licenses.links" :from="licenses.from" :to="licenses.to" :total="licenses.total" />
         </div>
 
         <Teleport to="body">

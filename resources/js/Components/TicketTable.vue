@@ -43,16 +43,16 @@ const formatDate = (dateStr: string): string => {
                     <th class="py-4 px-6 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider">
                         <div class="flex items-center gap-1">Subject <span class="material-symbols-outlined text-[16px]">swap_vert</span></div>
                     </th>
-                    <th class="py-4 px-6 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider w-24">
+                    <th class="py-4 px-6 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider w-24 hidden sm:table-cell">
                         <div class="flex items-center gap-1">Priority <span class="material-symbols-outlined text-[16px]">swap_vert</span></div>
                     </th>
-                    <th class="py-4 px-6 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider w-32">
+                    <th class="py-4 px-6 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider w-32 hidden md:table-cell">
                         <div class="flex items-center gap-1">Department <span class="material-symbols-outlined text-[16px]">swap_vert</span></div>
                     </th>
-                    <th class="py-4 px-6 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider w-36">
+                    <th class="py-4 px-6 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider w-36 hidden lg:table-cell">
                         <div class="flex items-center gap-1">Assignee <span class="material-symbols-outlined text-[16px]">swap_vert</span></div>
                     </th>
-                    <th class="py-4 px-6 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider w-36">
+                    <th class="py-4 px-6 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider w-36 hidden md:table-cell">
                         <div class="flex items-center gap-1">Created Date <span class="material-symbols-outlined text-[16px]">swap_vert</span></div>
                     </th>
                     <th class="py-4 px-6 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider w-28">
@@ -70,9 +70,9 @@ const formatDate = (dateStr: string): string => {
                         <div class="text-body-md text-on-surface dark:text-gray-100 group-hover:text-primary transition-colors">{{ t.title }}</div>
                         <p class="text-[12px] text-outline dark:text-gray-400">Ticket ID: #{{ t.ticket_number }}</p>
                     </td>
-                    <td class="py-4 px-6"><PriorityBadge :priority="t.priority" /></td>
-                    <td class="py-4 px-6 text-body-sm text-on-surface-variant dark:text-gray-400">{{ t.department?.name ?? '—' }}</td>
-                    <td class="py-4 px-6">
+                    <td class="py-4 px-6 hidden sm:table-cell"><PriorityBadge :priority="t.priority" /></td>
+                    <td class="py-4 px-6 text-body-sm text-on-surface-variant dark:text-gray-400 hidden md:table-cell">{{ t.department?.name ?? '—' }}</td>
+                    <td class="py-4 px-6 hidden lg:table-cell">
                         <div class="flex items-center gap-2">
                             <div v-if="t.assigned_agent" class="w-7 h-7 rounded-full bg-surface-container dark:bg-gray-700 flex items-center justify-center text-outline dark:text-gray-300 text-xs border border-border-subtle dark:border-gray-600">
                                 <span class="material-symbols-outlined text-[16px]">person</span>
@@ -82,7 +82,7 @@ const formatDate = (dateStr: string): string => {
                             <span v-else class="text-body-sm text-outline dark:text-gray-400 italic">Unassigned</span>
                         </div>
                     </td>
-                    <td class="py-4 px-6 text-body-sm text-on-surface-variant dark:text-gray-400">{{ formatDate(t.created_at) }}</td>
+                    <td class="py-4 px-6 text-body-sm text-on-surface-variant dark:text-gray-400 hidden md:table-cell">{{ formatDate(t.created_at) }}</td>
                     <td class="py-4 px-6"><StatusPill :status="t.status" /></td>
 
                 </tr>

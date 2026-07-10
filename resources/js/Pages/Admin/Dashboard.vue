@@ -90,30 +90,32 @@ const filteredRecent = computed(() => {
             <div v-if="filteredRecent.length === 0" class="p-8 text-center text-outline dark:text-gray-400 text-body-md">
                 {{ search ? 'No tickets match your search.' : 'Sin tickets a&uacute;n.' }}
             </div>
-            <table v-else class="w-full text-left">
+            <div v-else class="overflow-x-auto">
+            <table class="w-full text-left min-w-[640px]">
                 <thead>
                     <tr class="bg-surface-container-low dark:bg-gray-700 border-b border-border-subtle dark:border-gray-700">
                         <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider">#</th>
                         <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider">T&iacute;tulo</th>
-                        <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider">Depto</th>
-                        <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider">Categor&iacute;a</th>
+                        <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider hidden md:table-cell">Depto</th>
+                        <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider hidden lg:table-cell">Categor&iacute;a</th>
                         <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider">Prioridad</th>
                         <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider">Estado</th>
-                        <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider">Asignado</th>
+                        <th class="px-6 py-3 text-label-sm uppercase text-outline dark:text-gray-400 font-bold tracking-wider hidden sm:table-cell">Asignado</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-border-subtle dark:divide-gray-700">
                     <tr v-for="t in filteredRecent" :key="t.id" class="hover:bg-surface-container-lowest dark:hover:bg-gray-700/50 transition-colors cursor-pointer" @click="router.get(route('admin.tickets.show', { ticket: t.id }))">
                         <td class="px-6 py-3 text-body-sm font-mono text-on-surface dark:text-gray-100">{{ t.ticket_number }}</td>
-                        <td class="px-6 py-3 text-body-sm text-on-surface dark:text-gray-100 truncate max-w-xs">{{ t.title }}</td>
-                        <td class="px-6 py-3 text-body-sm text-outline dark:text-gray-400">{{ t.department?.name ?? '—' }}</td>
-                        <td class="px-6 py-3 text-body-sm text-outline dark:text-gray-400">{{ t.category?.name ?? '—' }} / {{ t.subcategory?.name ?? '—' }}</td>
+                        <td class="px-6 py-3 text-body-sm text-on-surface dark:text-gray-100 max-w-[200px] truncate">{{ t.title }}</td>
+                        <td class="px-6 py-3 text-body-sm text-outline dark:text-gray-400 hidden md:table-cell">{{ t.department?.name ?? '—' }}</td>
+                        <td class="px-6 py-3 text-body-sm text-outline dark:text-gray-400 hidden lg:table-cell">{{ t.category?.name ?? '—' }} / {{ t.subcategory?.name ?? '—' }}</td>
                         <td class="px-6 py-3"><PriorityBadge :priority="t.priority" /></td>
                         <td class="px-6 py-3"><StatusPill :status="t.status" /></td>
-                        <td class="px-6 py-3 text-body-sm text-outline dark:text-gray-400">{{ t.assigned_agent?.name ?? '—' }}</td>
+                        <td class="px-6 py-3 text-body-sm text-outline dark:text-gray-400 hidden sm:table-cell">{{ t.assigned_agent?.name ?? '—' }}</td>
                     </tr>
                 </tbody>
             </table>
+            </div>
         </div>
     </AppLayout>
 </template>
