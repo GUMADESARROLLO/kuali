@@ -27,7 +27,7 @@ services:
 
   build_kuali:
     container_name: cn_kuali_node
-    image: node:20
+    image: node:22
     working_dir: /app/kuali
     volumes:
       - "./:/app/kuali"
